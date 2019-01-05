@@ -50,8 +50,8 @@ Vue.component('gists-sidebar', {
 		display (filename) {
 			return filename.replace(/\.md$/, '');
 		},
-		date (gist) {
-			return new Date(gist.updated_at).toLocaleString();
+		date (string) {
+			return new Date(string).toLocaleString();
 		},
 		remove (filename) {
 			if (confirm(`The file ${filename} will be removed from this gist. Are you sure?`)) {
@@ -139,8 +139,9 @@ Vue.component('gists-sidebar', {
 			})
 		},
 		renameGist (gistId) {
-			const newDescription = prompt('New description for the gist?', '');
-			if (!newDescription) return;
+			const existingDescription = this.gists.find(gist => gist.id === gistId).description || ''
+			const newDescription = prompt('New description for the gist?', existingDescription);
+			if (!newDescription || newDescription === existingDescription) return;
 			fetch(`/api/gist/${gistId}`, {
 				method: 'PATCH',
 				body: JSON.stringify({
@@ -186,7 +187,6 @@ Vue.component('gists-sidebar', {
 					</button>
 				</h1>
 				<ul class="files-list" v-if="selectedGist">
-					<li class="gist-name">{{name(selectedGist)}}</li>
 					<li
 						v-for="file, filename in selectedGist.files"
 						:key="filename"
@@ -200,6 +200,13 @@ Vue.component('gists-sidebar', {
 							<button @click.stop="remove(filename)" title="Delete file"><i class="fas fa-fw fa-times"/></button>
 						</span>
 					</li>
+					<li class="gist-info">
+						<p>{{selectedGist.description ? '"' + selectedGist.description + '"' : '(No description)'}}</p>
+						<p>Modified {{date(selectedGist.updated_at)}}</p>
+						<p>Created {{date(selectedGist.created_at)}}</p>
+						<p>{{Object.keys(selectedGist.files).length}} file{{Object.keys(selectedGist.files).length === 1 ? '' : 's'}}</p>
+						<p><a :href="selectedGist.html_url">View on gist.github.com</a></p>
+					</li>
 				</ul>
 				<ul class="gists-list" v-else>
 					<li
@@ -209,7 +216,7 @@ Vue.component('gists-sidebar', {
 						@click="selectGist(gist.id)"
 					>
 						<span class="name">{{name(gist)}}</span>
-						<small class="updated">{{date(gist)}}</small>
+						<small class="updated">{{date(gist.created_at)}}</small>
 						<span class="buttons">
 							<button @click.stop="renameGist(gist.id)" title="Rename gist"><i class="fas fa-fw fa-pencil-alt"/></button>
 							<button @click.stop="removeGist(gist.id)" title="Delete gist"><i class="fas fa-fw fa-times"/></button>
@@ -483,6 +490,7 @@ Vue.component('editor-pane', {
 	mounted () {
 		this.codemirrorInstance = CodeMirror.fromTextArea(document.getElementById('main-textarea'), {
 			lineNumbers: true,
+			theme: this.dark ? 'darcula' : 'default',
 		});
 		this.codemirrorInstance.on('change', () => {
 			this.contents = this.codemirrorInstance.getDoc().getValue();
@@ -503,7 +511,7 @@ const app = new Vue({
 		fileContents: null,
 		contentsChanged: false,
 		saveEnabled: true,
-		darkTheme: false,
+		darkTheme: !!localStorage.getItem('darkTheme'),
 		sidebarHidden: false,
 	},
 	template: `
@@ -525,6 +533,11 @@ const app = new Vue({
 			/>
 		</div>
 	`,
+	watch: {
+		darkTheme (dark) {
+			localStorage.setItem('darkTheme', dark);
+		},
+	},
 	methods: {
 		fileUpdate (gist, file) {
 			this.currentFile = file;
