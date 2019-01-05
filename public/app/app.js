@@ -140,7 +140,7 @@ Vue.component('code-runner', {
 			result: 'Hit "Run" to see the result.',
 			running: false,
 			codemirrorInstance: null,
-			collapsed: true,
+			collapsed: false,
 		};
 	},
 	computed: {
@@ -196,7 +196,9 @@ Vue.component('code-runner', {
 			lineWrapping: true,
 			lineNumbers: false,
 			readOnly: true,
+			cursorBlinkRate: -1,
 		});
+		this.codemirrorInstance.getDoc().setValue(this.paneText);
 	},
 })
 
