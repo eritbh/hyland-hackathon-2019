@@ -188,7 +188,11 @@ Vue.component('editor-pane', {
 					this.codemirrorInstance.setOption('mode', 'gfm');
 					this.codemirrorInstance.setOption('lineNumbers', false);
 					break;
-				case "Text":
+				case 'JavaScript':
+					this.codemirrorInstance.setOption('mode', 'javascript');
+					this.codemirrorInstance.setOption('lineNumbers', true);
+					break;
+				case 'Text':
 				case null: // Plain text probably
 					this.codemirrorInstance.setOption('mode', null);
 					this.codemirrorInstance.setOption('lineNumbers', false);
