@@ -143,6 +143,8 @@ Vue.component('code-runner', {
 					return `https://hook.io/geo1088/py-exec-then-eval?code=${encodeURIComponent(this.source)}`;
 				case 'JavaScript':
 					return `https://hook.io/geo1088/js-eval?code=${encodeURIComponent(this.source)}`;
+				case 'Ruby':
+					return `https://hook.io/geo1088/ruby-eval?code=${encodeURIComponent(this.source)}`;
 			}
 		},
 		paneText () {
@@ -210,6 +212,7 @@ Vue.component('editor-pane', {
 			return this.file && [
 				'JavaScript',
 				'Python',
+				'Ruby',
 			].includes(this.file.language);
 		},
 	},
@@ -279,6 +282,11 @@ Vue.component('editor-pane', {
 					break;
 				case 'Python':
 					this.codemirrorInstance.setOption('mode', 'python');
+					this.codemirrorInstance.setOption('lineNumbers', true);
+					this.codemirrorInstance.setOption('lineWrapping', false);
+					break;
+				case 'Ruby':
+					this.codemirrorInstance.setOption('mode', 'ruby');
 					this.codemirrorInstance.setOption('lineNumbers', true);
 					this.codemirrorInstance.setOption('lineWrapping', false);
 					break;
