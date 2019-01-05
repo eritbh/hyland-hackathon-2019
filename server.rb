@@ -17,7 +17,7 @@ helpers do
   include Rack::Utils
   alias_method :h, :escape_html
 
-  def gh_request(url, method: :get, error_val: (no_error_val = true; nil), **opts)
+  def gh_request(url, method: :get, error: (no_error_val = true; nil), **opts)
     other_headers = opts[:headers] || {}
     opts.delete(:headers)
     response = HTTParty.send method, url, {
@@ -27,8 +27,8 @@ helpers do
         "User-Agent" => "Geo1088"
       }.merge(other_headers)
     }.merge(opts)
+    halt error if !no_error_val and response.code >= 400
     content_type "application/json"
-    return error_val if !no_error_val and response.code >= 400
     response.body
   end
 end
@@ -62,18 +62,18 @@ get "/auth/github/callback" do
 end
 
 get "/logout" do
-  session.delete :access_token
+  session.clear
   redirect to "/"
 end
 
 get "/api/me" do
-  res = gh_request "https://api.github.com/user", error_val: nil
+  res = gh_request "https://api.github.com/user", error: [401]
   p res
   res
 end
 
 get "/api/gists" do
-  gh_request "https://api.github.com/gists"
+  gh_request "https://api.github.com/gists", error: [401]
 end
 
 get "/api/gist/:id" do
@@ -88,7 +88,8 @@ patch "/api/gist/:id" do |id|
     headers: {
       "Content-Type" => "application/json"
     },
-    body: body
+    body: body,
+    error: [401]
   }
 end
 
@@ -97,5 +98,8 @@ get "/" do
 end
 
 get "/app" do
+  p session
+  p session[:access_token]
+  redirect to "/auth/github" if session[:access_token].nil?
   redirect to "/app/index.html"
 end

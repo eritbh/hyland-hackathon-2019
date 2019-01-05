@@ -72,9 +72,11 @@ Vue.component('gists-sidebar', {
 		</div>
 	`,
 	mounted () {
-		fetch('/api/gists').then(res => res.json()).then(data => {
-			this.gists = data;
+		fetch('/api/gists').then(res => {
 			this.loaded = true;
+			return res;
+		}).then(res => res.ok && res.json()).then(data => {
+			this.gists = data || [];
 		});
 	},
 });
@@ -111,16 +113,13 @@ Vue.component('user-preview', {
 		</div>
 	`,
 	mounted () {
-		fetch('/api/me').then(res => res.json()).then(data => {
-			this.user = data;
+		fetch('/api/me').then(res => {
 			this.loaded = true;
+			return res;
+		}).then(res => res.ok && res.json()).then(data => {
+			this.user = data || null;
 		});
 	},
-})
-
-Vue.component('markdown-toolbar', {
-	template: `
-	`
 })
 
 Vue.component('editor-pane', {
@@ -167,10 +166,12 @@ Vue.component('editor-pane', {
 		file (newFile) {
 			if (!newFile) return;
 			this.loaded = false;
-			fetch(newFile.raw_url).then(res => res.text()).then(contents => {
-				this.updateContents(contents);
-				this.updateCMSettings();
+			fetch(newFile.raw_url).then(res => {
 				this.loaded = true;
+				return res;
+			}).then(res => res.ok && res.text()).then(text => {
+				this.updateContents(text || '');
+				this.updateCMSettings();
 			});
 		},
 	},
