@@ -1,5 +1,8 @@
 require "sinatra"
 require "yaml"
+require "json"
+require "securerandom"
+require "httparty"
 
 CONFIG = YAML.load_file "config.yaml"
 
@@ -15,30 +18,51 @@ helpers do
   alias_method :h, :escape_html
 end
 
-before do
-  if session[:access_token]
-    @user = nil # TODO
-  else
-    @user = nil
-  end
-end
-
 get "/auth/github" do
-  # TODO: Github auth stuff
+  state = SecureRandom.urlsafe_base64
+  session[:state] = state
+  redirect to "https://github.com/login/oauth/authorize?" + URI.encode_www_form(
+    client_id: CONFIG[:github][:client_id],
+    redirect_uri: CONFIG[:github][:redirect_uri],
+    scope: "gist",
+    state: state
+  )
 end
-
 get "/auth/github/callback" do
-  # TODO: more auth stuff
+  halt "invalid params" if !params["state"] || !params["code"]
+  response = HTTParty.post "https://github.com/login/oauth/access_token", {
+    headers: {
+      Accept: "application/json"
+    },
+    body: {
+      client_id: CONFIG[:github][:client_id],
+      client_secret: CONFIG[:github][:client_secret],
+      code: params["code"],
+      resirect_uri: CONFIG[:github][:redirect_uri],
+      state: session[:state]
+    }
+  }
+  p response
+  session[:access_token] = response.parsed_response["access_token"] # yeet
+  halt "access token stored in session"
 end
 
 get "/gists" do
-  # TODO: Returns a list of gists and their files' names
+  response = HTTParty.get "https://api.github.com/gists", {
+    headers: {
+      "Authorization" => "token #{session[:access_token]}",
+      "Accept" => "application/json",
+      "User-Agent" => "Geo1088"
+    }
+  }
+  content_type "application/json"
+  response.body
 end
 
 get "/gist/:id" do
   # TODO: Return the content of the gist for the client
 end
 
-get "/" do
-  redirect to "/home"
+get "/app" do
+
 end
