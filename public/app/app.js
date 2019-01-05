@@ -41,6 +41,6 @@ Vue.component('gists-list', {
 new Vue({
 	el: '#app',
 	template: `
-		<some-component text="Hello, World!"/>
+		<gists-list username="geo1088"/>
 	`,
 });
