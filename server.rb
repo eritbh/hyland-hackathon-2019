@@ -47,7 +47,7 @@ get "/auth/github/callback" do
   halt "access token stored in session"
 end
 
-get "/gists" do
+get "/api/gists" do
   response = HTTParty.get "https://api.github.com/gists", {
     headers: {
       "Authorization" => "token #{session[:access_token]}",
