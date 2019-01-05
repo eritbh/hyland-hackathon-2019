@@ -158,6 +158,7 @@ Vue.component('editor-pane', {
 			this.loaded = false;
 			fetch(newFile.raw_url).then(res => res.text()).then(contents => {
 				this.updateContents(contents);
+				this.updateCMSettings();
 				this.loaded = true;
 			});
 		},
@@ -167,7 +168,19 @@ Vue.component('editor-pane', {
 			this.contents = contents;
 			this.codemirrorInstance.getDoc().setValue(contents);
 			this.$emit('initialValue', contents);
-		}
+		},
+		updateCMSettings () {
+			if (!this.file) return;
+			switch (this.file.language) {
+				case 'Markdown':
+				case "Text":
+				case null: // Plain text
+					this.codemirrorInstance.setOption('lineNumbers', false);
+					break;
+				default:
+					this.codemirrorInstance.setOption('lineNumbers', true);
+			}
+		},
 	},
 	mounted () {
 		this.codemirrorInstance = CodeMirror.fromTextArea(document.getElementById('main-textarea'), {
