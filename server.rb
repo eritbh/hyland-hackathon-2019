@@ -8,7 +8,7 @@ CONFIG = YAML.load_file "config.yaml"
 
 configure do
   use Rack::Session::Cookie, secret: CONFIG[:cookie_secret]
-  set :bind, "0.0.0.0"
+  set :bind, ENV["IP"] || "0.0.0.0"
   set :port, ENV["PORT"] || 4567
   set :environment, :development
 end
