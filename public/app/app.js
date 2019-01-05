@@ -25,7 +25,7 @@ Vue.component('gists-sidebar', {
 	methods: {
 		name (gist) {
 			// Return filename of the first file (TODO)
-			return gist.description || Object.keys(gist.files)[0];
+			return gist.description || Object.keys(gist.files)[0] || '<no content>';
 		},
 		selectGist (gistId) {
 			this.selectedGistId = gistId;
@@ -43,6 +43,27 @@ Vue.component('gists-sidebar', {
 		display (filename) {
 			return filename.replace(/\.md$/, '');
 		},
+		remove (filename) {
+			if (confirm(`The file ${filename} will be removed from this gist.`)) {
+				fetch(`/api/gist/${this.selectedGistId}`, {
+					method: 'PATCH',
+					body: JSON.stringify({
+						files: {
+							[filename]: null,
+						},
+					}),
+				}).then(res => {
+					if (!res.ok) return;
+					Vue.delete(this.selectedGist.files, filename);
+					if (this.selectedFilename === filename) {
+						this.selectFile(null);
+					}
+				});
+			}
+		},
+		rename (filename) {
+
+		},
 	},
 	template: `
 		<div class="gists-sidebar">
@@ -51,7 +72,13 @@ Vue.component('gists-sidebar', {
 			</div>
 			<template v-else>
 				<h1 class="header">
-					<button v-if="selectedGist" @click="selectGist(null)">Back</button>
+					<button
+						v-if="selectedGist"
+						@click="selectGist(null)"
+						title="Back to list of gists"
+					>
+						<i class="fas fa-fw fa-arrow-left"/>
+					</button>
 					{{selectedGist ? 'Files' : 'My Gists'}}
 				</h1>
 				<ul class="files-list" v-if="selectedGist">
@@ -63,9 +90,9 @@ Vue.component('gists-sidebar', {
 					>
 						<i :class="['fas fa-fw', icon(filename)]"/>
 						{{display(filename)}}
-						<span class="buttons">
-							<button class="delete"><i class="fas fa-fw fa-times"/></button>
-							<button class="rename"><i class="fas fa-fw fa-pencil-alt"/></button>
+							<span class="buttons">
+							<button @click.stop="remove(filename)" title="Delete file"><i class="fas fa-fw fa-times"/></button>
+							<button @click.stop="rename(filename)" title="Rename file"><i class="fas fa-fw fa-pencil-alt"/></button>
 						</span>
 					</li>
 				</ul>
@@ -105,19 +132,22 @@ Vue.component('user-preview', {
 				Loading...
 			</template>
 			<template v-else-if="user">
-				<img
-					:src="user.avatar_url"
-					width="32"
-					height="32"
-				/>
-				<div class="text">
-					@{{user.login}}<br>
-					<a href="/logout">Log Out</a>
+				<div class="user">
+					<img
+						:src="user.avatar_url"
+						width="32"
+						height="32"
+					/>
+					@{{user.login}}
 				</div>
 				<div class="controls">
-					<button @click="$emit('darkToggle')">
-						<i class="fas fa-moon"/>
+					<button @click="$emit('darkToggle')" title="Dark theme">
+						<i class="fas fa-fw fa-moon"/>
 					</button>
+					<button @click="logout" title="Log out">
+						<i class="fas fa-fw fa-sign-out-alt"/>
+					</button>
+				</div>
 			</template>
 			<template v-else>
 				<div class="text">
@@ -242,13 +272,21 @@ Vue.component('editor-pane', {
 		<div :class="['editor-pane', {'extra-styles': extraStyles, 'has-runner': hasRunner, 'markdown': file && file.language === 'Markdown'}]">
 			<div class="pane-content">
 				<div class="markdown-toolbar">
-					<div class="label">{{file ? file.filename : ''}}</div>
+					<button
+						@click="$emit('toggleList')"
+						class="listToggle"
+						title="Toggle gist list"
+					>
+						<i class="fas fa-fw fa-bars"/>
+					</button>
 					<button
 						@click="$emit('save')"
 						:disabled="!saveEnabled"
+						title="Save current file"
 					>
-						<i :class="['fas', saveEnabled ? 'fa-save' : 'fa-circle-notch fa-spin']"/>
+						<i :class="['fas fa-fw', saveEnabled ? 'fa-save' : 'fa-circle-notch fa-spin']"/>
 					</button>
+					<div class="label">{{file ? file.filename : ''}}</div>
 				</div>
 				<textarea
 					class="code-area"
@@ -345,9 +383,10 @@ const app = new Vue({
 		contentsChanged: false,
 		saveEnabled: true,
 		darkTheme: false,
+		sidebarHidden: false,
 	},
 	template: `
-		<div :class="['app', {dark: darkTheme}]">
+		<div :class="['app', {dark: darkTheme, 'sidebar-hidden': sidebarHidden}]">
 			<user-preview
 				@darkToggle="darkTheme = !darkTheme"
 			/>
@@ -358,6 +397,7 @@ const app = new Vue({
 				:file="currentFile"
 				:saveEnabled="saveEnabled"
 				:dark="darkTheme"
+				@toggleList="sidebarHidden = !sidebarHidden"
 				@change="fileContentsUpdated"
 				@initialValue="fileContentsInitial"
 				@save="save"

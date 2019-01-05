@@ -27,6 +27,7 @@ helpers do
         "User-Agent" => "Geo1088"
       }.merge(other_headers)
     }.merge(opts)
+    p response.body
     halt error if !no_error_val and response.code >= 400
     content_type "application/json"
     response.body
@@ -82,7 +83,6 @@ end
 
 patch "/api/gist/:id" do |id|
   body = request.body.string
-  p body
   gh_request "https://api.github.com/gists/#{id}", {
     method: :patch,
     headers: {
@@ -98,8 +98,6 @@ get "/" do
 end
 
 get "/app" do
-  p session
-  p session[:access_token]
   redirect to "/auth/github" if session[:access_token].nil?
   redirect to "/app/index.html"
 end

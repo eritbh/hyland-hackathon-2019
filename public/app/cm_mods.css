@@ -18,3 +18,6 @@
 	height: 2px;
 	background: #DDD;
 }
+.dark .extra-styles .cm-hr::after {
+	background: #a9b7c6;
+}

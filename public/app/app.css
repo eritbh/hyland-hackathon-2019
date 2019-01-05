@@ -16,13 +16,24 @@ body {
 		"acct editor" 50px
 		/300px calc(100% - 300px);
 }
-
+.app.sidebar-hidden {
+	grid:
+		"list editor" calc(100% - 50px)
+		"acct editor" 50px
+		/0    100%;
+}
 .gists-sidebar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 00px;
+	width: 300px;
 	grid-area: list;
-	overflow-x: hidden;
-	overflow-y: auto;
+	overflow: hidden;
 	background: #EEE;
 	border-right: 1px solid #CCC;
+	transition: left 300ms;
+	z-index: 11;
 }
 .gists-sidebar .header {
 	font-size: 1.5em;
@@ -39,11 +50,31 @@ body {
 	position: absolute;
 	left: 5px;
 }
+.gists-sidebar .header button,
+.user-preview button,
+.markdown-toolbar button {
+	background: none;
+	border: none;
+	padding: 4px 4px;
+	border-radius: 5px;
+	font-size: 1em;
+}
+.gists-sidebar .header button:hover,
+.user-preview button:hover,
+.markdown-toolbar button:hover {
+	background: rgba(0,0,0,.1);
+}
+.user-preview button {
+	margin-right: 5px;
+	font-size: 1.25em;
+}
 .gists-sidebar .gists-list,
 .gists-sidebar .files-list {
 	margin: 0;
 	padding: 0;
 	cursor: default;
+	height: calc(100% - 50px);
+	overflow-y: auto;
 }
 .gists-sidebar .gist-item,
 .gists-sidebar .file-item {
@@ -51,6 +82,10 @@ body {
 	list-style: none;
 	margin: 0;
 	padding: 5px 10px;
+}
+.gists-sidebar .gist-item > i,
+.gists-sidebar .file-item > i {
+	margin-right: 5px;
 }
 .gists-sidebar .gist-item .buttons,
 .gists-sidebar .file-item .buttons {
@@ -86,17 +121,32 @@ body {
 }
 
 .user-preview {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 300px;
+	height: 50px;
 	grid-area: acct;
 	background: #DDD;
 	border-top: 1px solid #CCC;
 	border-right: 1px solid #CCC;
 	display: flex;
-	justify-content: center;
+	justify-content: space-between;
+	align-items: center;
+	transition: left 300ms;
+}
+.user-preview .user {
+	display: flex;
 	align-items: center;
 }
 .user-preview img {
-	margin-right: 10px;
+	margin: 0 10px;
 	border-radius: 5px;
+}
+
+.sidebar-hidden .gists-sidebar,
+.sidebar-hidden .user-preview {
+	left: -300px;
 }
 
 .editor-pane {
@@ -118,6 +168,22 @@ body {
 	align-items: center;
 	height: 50px;
 }
+.markdown-toolbar .label {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	pointer-events: none;
+}
+.editor-pane .markdown-toolbar > * {
+	margin-right: 5px;
+}
+.markdown-toolbar button {
+	font-size: 1.25em;
+}
 .editor-pane .loading,
 .editor-pane .no-file {
 	position: absolute;
@@ -126,8 +192,7 @@ body {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: rgba(0,0,0,0.1);
-	box-shadow: inset 0 0 20px 10px rgba(0,0,0,0.1);
+	background: white;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -174,14 +239,21 @@ body {
 	display: none;
 }
 
+.app.dark,
 .app.dark .gists-sidebar,
 .app.dark .user-preview,
 .app.dark .editor-pane .markdown-toolbar,
 .app.dark .editor-pane .code-runner,
-.app.dark .editor-pane .code-runner .buttons {
+.app.dark .editor-pane .code-runner .buttons,
+.app.dark .gists-sidebar .header,
+.app.dark .editor-pane .loading,
+.app.dark .editor-pane .no-file {
 	border-color: #000;
 	background: #2b2b2b;
 	color: white;
+}
+.app.dark .fas {
+	color: white !important;
 }
 .app.dark .gists-sidebar {
 	background: #242424;
