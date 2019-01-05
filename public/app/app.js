@@ -78,9 +78,7 @@ Vue.component('gists-sidebar', {
 		fetch('/api/gists').then(res => res.json()).then(data => {
 			this.gists = data;
 			this.loaded = true;
-		}).catch(err => {
-			this.loaded = true;
-		})
+		});
 	},
 });
 
@@ -119,9 +117,7 @@ Vue.component('user-preview', {
 		fetch('/api/me').then(res => res.json()).then(data => {
 			this.user = data;
 			this.loaded = true;
-		}).catch(err => {
-			this.loaded = true;
-		})
+		});
 	},
 })
 
@@ -129,6 +125,7 @@ Vue.component('markdown-toolbar', {
 	template: `
 		<div class="markdown-toolbar">
 			Toolbar
+			<button @click="$emit('save')">Save</button>
 		</div>
 	`
 })
@@ -165,9 +162,7 @@ Vue.component('editor-pane', {
 			fetch(newFile.raw_url).then(res => res.text()).then(contents => {
 				this.contents = contents;
 				console.log('hopefully this happens second');
-			}).catch(err => {
-				this.loaded = true;
-			})
+			});
 		},
 		contents (newContents) {
 			console.log('hi');
@@ -197,7 +192,9 @@ const app = new Vue({
 			<gists-sidebar
 				@file="fileUpdate"
 			/>
-			<markdown-toolbar/>
+			<markdown-toolbar
+				@save="save"
+			/>
 			<editor-pane
 				:file="currentFile"
 				@change="fileContentsUpdated"
@@ -219,16 +216,14 @@ const app = new Vue({
 			this.fileContents = contents;
 			this.contentsChanged = true;
 		},
-		// save () {
-		// 	fetch('/api/updateGist', {
-		// 		method: 'POST',
-		// 		body: this.contents
-		// 	}).then(res => {
-		// 		this.contentsChanged = false;
-		// 	}).catch(err => {
-		// 		alert('' + err);
-		// 	})
-		// },
+		save () {
+			fetch('/api/updateGist', {
+				method: 'POST',
+				body: this.contents
+			}).then(res => {
+				this.contentsChanged = false;
+			});
+		},
 	},
 });
 
