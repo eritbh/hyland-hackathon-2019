@@ -62,3 +62,6 @@ body {
 	justify-content: center;
 	align-items: center;
 }
+.editor-pane .code-area {
+	white-space: pre-wrap;
+}

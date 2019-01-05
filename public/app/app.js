@@ -7,33 +7,83 @@ Vue.component('gists-sidebar', {
 	},
 	data () {
 		return {
+			loaded: false,
 			gists: [],
+			selectedGistId: null,
+			selectedFilename: null,
 		};
+	},
+	computed: {
+		selectedGist () {
+			console.log('calculated selectedGist')
+			return this.gists.find(gist => gist.id === this.selectedGistId);
+		},
+		selectedFile () {
+			console.log('calculated selectedFile')
+			if (!this.selectedGist) return null;
+			return this.selectedGist.files[this.selectedFilename];
+		}
 	},
 	methods: {
 		name (gist) {
 			// Return filename of the first file (TODO)
 			return Object.keys(gist.files)[0];
+		},
+		selectGist (gistId) {
+			console.log(gistId);
+			this.selectedGistId = gistId;
+			this.selectedFilename = null;
+			if (gistId != null) {
+				this.$emit('gist', this.selectedGist);
+			}
+		},
+		selectFile (filename) {
+			this.selectedFilename = filename;
+			if (filename != null) {
+				this.$emit('file', this.selectedFile);
+			}
 		}
 	},
 	template: `
 		<div class="gists-sidebar">
-			<ul class="gists-list">
-				<h1>My Gists</h1>
-				<li
-					v-for="gist in gists"
-					:key="gist.id"
-					class="gist-item"
-				>
-					{{name(gist)}}
-				</li>
-			</ul>
+			<div class="loading" v-if="!loaded">
+				Loading...
+			</div>
+			<template v-else>
+				<h1>
+					<button v-if="selectedGist" @click="selectGist(null)">Back</button>
+					{{selectedGist ? 'Files' : 'My Gists'}}
+				</h1>
+				<ul class="files-list" v-if="selectedGist">
+					<li
+						v-for="file, filename in selectedGist.files"
+						:key="filename"
+						class="file-item"
+						@click="selectFile(filename)"
+					>
+						{{filename}}
+					</li>
+				</ul>
+				<ul class="gists-list" v-else>
+					<li
+						v-for="gist in gists"
+						:key="gist.id"
+						class="gist-item"
+						@click="selectGist(gist.id)"
+					>
+						{{name(gist)}}
+					</li>
+				</ul>
+			</template>
 		</div>
 	`,
 	mounted () {
 		console.log('mounted')
 		fetch('/api/gists').then(res => res.json()).then(data => {
 			this.gists = data;
+			this.loaded = true;
+		}).catch(err => {
+			this.loaded = true;
 		})
 	},
 });
@@ -88,11 +138,20 @@ Vue.component('markdown-toolbar', {
 })
 
 Vue.component('editor-pane', {
+	props: {
+		file: Object,
+	},
+	computed: {
+		contents () {
+			if (!this.file) return ''
+			return this.file.raw_url
+		},
+	},
 	template: `
 		<div class="editor-pane">
-			Editor
+			<pre class="code-editor"><code>{{contents}}</code></pre>
 		</div>
-	`
+	`,
 })
 
 // Create the main Vue instance
@@ -101,13 +160,23 @@ new Vue({
 	data: {
 		user: null,
 		loaded: false,
+		currentFile: null,
 	},
 	template: `
 		<div class="app">
 			<user-preview/>
-			<gists-sidebar username="geo1088"/>
+			<gists-sidebar
+				@file="fileUpdate"
+			/>
 			<markdown-toolbar/>
-			<editor-pane/>
+			<editor-pane
+				:file="currentFile"
+			/>
 		</div>
 	`,
+	methods: {
+		fileUpdate (file) {
+			this.currentFile = file;
+		},
+	},
 });
