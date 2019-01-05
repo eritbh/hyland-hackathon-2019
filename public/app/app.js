@@ -120,6 +120,49 @@ Vue.component('user-preview', {
 			this.user = data || null;
 		});
 	},
+});
+
+Vue.component('code-runner', {
+	props: {
+		source: String,
+		language: String,
+	},
+	data () {
+		return {
+			result: '',
+			running: false,
+		};
+	},
+	computed: {
+		url () {
+			switch (this.language) {
+				case 'Python':
+					return `https://hook.io/geo1088/py-exec-then-eval?code=${encodeURIComponent(this.source)}`;
+				case 'JavaScript':
+					return `https://hook.io/geo1088/js-eval?code=${encodeURIComponent(this.source)}`;
+			}
+		},
+		paneText () {
+			return this.running ? 'Running...' : this.result;
+		},
+	},
+	methods: {
+		run () {
+			this.running = true;
+			fetch(this.url).then(res => res.text()).then(text => {
+				this.result = text;
+				this.running = false;
+			})
+		}
+	},
+	template: `
+		<div class="code-runner">
+			<div class="buttons">
+				<button class="run" @click="run">Run</button>
+			</div>
+			<pre><code>{{paneText}}</code></pre>
+		</div>
+	`,
 })
 
 Vue.component('editor-pane', {
@@ -136,8 +179,16 @@ Vue.component('editor-pane', {
 			useCodeEditorForMarkdown: false,
 		};
 	},
+	computed: {
+		hasRunner () {
+			return this.file && [
+				'JavaScript',
+				'Python',
+			].includes(this.file.language);
+		},
+	},
 	template: `
-		<div :class="['editor-pane', {'extra-styles': extraStyles}]">
+		<div :class="['editor-pane', {'extra-styles': extraStyles, 'has-runner': hasRunner}]">
 			<div class="markdown-toolbar">
 				<div class="label">{{file ? file.filename : ''}}</div>
 				<button
@@ -151,6 +202,11 @@ Vue.component('editor-pane', {
 				<textarea
 					class="code-area"
 					id="main-textarea"
+				/>
+				<code-runner
+					v-if="hasRunner"
+					:source="contents"
+					:language="file.language"
 				/>
 			</div>
 			<!-- Overlays -->

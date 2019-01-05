@@ -57,6 +57,13 @@ body {
 		/100%;
 	position: relative;
 }
+.editor-pane.has-runner {
+	grid:
+		"toolbar" 40px
+		"content" calc(50% - 40px)
+		"runner " 50%
+		/100%;
+}
 .editor-pane .markdown-toolbar {
 	grid-area: toolbar;
 	border-bottom: 1px solid #CCC;
@@ -94,4 +101,15 @@ body {
 }
 .editor-pane .CodeMirror-linenumber {
 	/* margin-left: -10px; */
+}
+.editor-pane .code-runner {
+	grid-area: runner;
+	border-top: 1px solid #CCC;
+}
+.editor-pane .code-runner .buttons {
+	border-bottom: 1px solid #CCC;
+	display: flex;
+	align-items: center;
+	height: 40px;
+	padding: 0 10px;
 }
