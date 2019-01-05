@@ -144,7 +144,7 @@ Vue.component('editor-pane', {
 					@click="$emit('save')"
 					:disabled="!saveEnabled"
 				>
-					Save
+					<i :class="['fas', saveEnabled ? 'fa-save' : 'fa-circle-notch fa-spin']"/>
 				</button>
 			</div>
 			<div class="pane-content">
