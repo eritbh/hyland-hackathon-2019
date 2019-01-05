@@ -264,6 +264,11 @@ Vue.component('user-preview', {
 			</template>
 		</div>
 	`,
+	methods: {
+		logout () {
+			window.location.href = "/logout";
+		},
+	},
 	mounted () {
 		fetch('/api/me').then(res => {
 			this.loaded = true;
@@ -418,7 +423,10 @@ Vue.component('editor-pane', {
 				Loading...
 			</div>
 			<div class="no-file" v-else-if="!file">
-				No file selected
+				<div class="inner" align="center">
+					<h2>No file selected</h2>
+					<p>Use the sidebar on the left to navigate and create gists</p>
+				</div>
 			</div>
 		</div>
 	`,
