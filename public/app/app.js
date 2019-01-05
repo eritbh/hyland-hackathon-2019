@@ -44,7 +44,7 @@ Vue.component('gists-sidebar', {
 			return filename.replace(/\.md$/, '');
 		},
 		remove (filename) {
-			if (confirm(`The file ${filename} will be removed from this gist.`)) {
+			if (confirm(`The file ${filename} will be removed from this gist. Are you sure?`)) {
 				fetch(`/api/gist/${this.selectedGistId}`, {
 					method: 'PATCH',
 					body: JSON.stringify({
@@ -111,8 +111,8 @@ Vue.component('gists-sidebar', {
 						<i :class="['fas fa-fw', icon(filename)]"/>
 						{{display(filename)}}
 							<span class="buttons">
-							<button @click.stop="remove(filename)" title="Delete file"><i class="fas fa-fw fa-times"/></button>
 							<button @click.stop="rename(filename)" title="Rename file"><i class="fas fa-fw fa-pencil-alt"/></button>
+							<button @click.stop="remove(filename)" title="Delete file"><i class="fas fa-fw fa-times"/></button>
 						</span>
 					</li>
 				</ul>
