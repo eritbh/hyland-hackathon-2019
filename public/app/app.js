@@ -276,17 +276,9 @@ Vue.component('editor-pane', {
 					this.codemirrorInstance.setOption('lineWrapping', true);
 					break;
 				case 'JavaScript':
-					this.codemirrorInstance.setOption('mode', 'javascript');
-					this.codemirrorInstance.setOption('lineNumbers', true);
-					this.codemirrorInstance.setOption('lineWrapping', false);
-					break;
 				case 'Python':
-					this.codemirrorInstance.setOption('mode', 'python');
-					this.codemirrorInstance.setOption('lineNumbers', true);
-					this.codemirrorInstance.setOption('lineWrapping', false);
-					break;
 				case 'Ruby':
-					this.codemirrorInstance.setOption('mode', 'ruby');
+					this.codemirrorInstance.setOption('mode', this.file.language.toLowerCase());
 					this.codemirrorInstance.setOption('lineNumbers', true);
 					this.codemirrorInstance.setOption('lineWrapping', false);
 					break;
