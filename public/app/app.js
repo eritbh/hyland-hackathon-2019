@@ -30,14 +30,11 @@ Vue.component('gists-sidebar', {
 		selectGist (gistId) {
 			this.selectedGistId = gistId;
 			this.selectedFilename = null;
-			if (gistId != null) {
-				this.$emit('gist', this.selectedGist);
-			}
 		},
 		selectFile (filename) {
 			this.selectedFilename = filename;
 			if (filename != null) {
-				this.$emit('file', this.selectedFile);
+				this.$emit('change', this.selectedGist, this.selectedFile);
 			}
 		}
 	},
@@ -182,6 +179,7 @@ const app = new Vue({
 	data: {
 		user: null,
 		loaded: false,
+		currentGist: null,
 		currentFile: null,
 		fileContents: null,
 		contentsChanged: false,
@@ -190,7 +188,7 @@ const app = new Vue({
 		<div class="app">
 			<user-preview/>
 			<gists-sidebar
-				@file="fileUpdate"
+				@change="fileUpdate"
 			/>
 			<markdown-toolbar
 				@save="save"
@@ -203,7 +201,7 @@ const app = new Vue({
 		</div>
 	`,
 	methods: {
-		fileUpdate (file) {
+		fileUpdate (gist, file) {
 			if (this.contentsChanged) {
 				response = prompt("You have unsaved changes, do you want to abandon them?");
 				if (response == false) {
@@ -211,15 +209,22 @@ const app = new Vue({
 				}
 			}
 			this.currentFile = file;
+			this.currentGist = gist;
 		},
 		fileContentsUpdated (contents) {
 			this.fileContents = contents;
 			this.contentsChanged = true;
 		},
 		save () {
-			fetch('/api/updateGist', {
-				method: 'POST',
-				body: this.contents
+			fetch(`/api/gist/${this.currentGist.id}`, {
+				method: 'PATCH',
+				body: JSON.stringify({
+					files: {
+						[this.currentFile.filename]: {
+							content: this.fileContents,
+						},
+					},
+				}),
 			}).then(res => {
 				this.contentsChanged = false;
 			});

@@ -17,14 +17,16 @@ helpers do
   include Rack::Utils
   alias_method :h, :escape_html
 
-  def gh_request(url, error_val: (no_error_val = true; nil))
-    response = HTTParty.get url, {
+  def gh_request(url, method: :get, error_val: (no_error_val = true; nil), **opts)
+    other_headers = opts[:headers] || {}
+    opts.delete(:headers)
+    response = HTTParty.send method, url, {
       headers: {
         "Authorization" => "token #{session[:access_token]}",
         "Accept" => "application/json",
         "User-Agent" => "Geo1088"
-      }
-    }
+      }.merge(other_headers)
+    }.merge(opts)
     content_type "application/json"
     return error_val if !no_error_val and response.code >= 400
     response.body
@@ -76,6 +78,18 @@ end
 
 get "/api/gist/:id" do
   # TODO: Return the content of the gist for the client
+end
+
+patch "/api/gist/:id" do |id|
+  body = request.body.string
+  p body
+  gh_request "https://api.github.com/gists/#{id}", {
+    method: :patch,
+    headers: {
+      "Content-Type" => "application/json"
+    },
+    body: body
+  }
 end
 
 get "/" do
