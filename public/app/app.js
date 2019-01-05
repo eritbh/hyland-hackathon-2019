@@ -160,7 +160,9 @@ Vue.component('code-runner', {
 			<div class="buttons">
 				<button class="run" @click="run">Run</button>
 			</div>
-			<pre><code>{{paneText}}</code></pre>
+			<div class="output">
+				<pre><code>{{paneText}}</code></pre>
+			</div>
 		</div>
 	`,
 })
@@ -203,12 +205,12 @@ Vue.component('editor-pane', {
 					class="code-area"
 					id="main-textarea"
 				/>
-				<code-runner
-					v-if="hasRunner"
-					:source="contents"
-					:language="file.language"
-				/>
 			</div>
+			<code-runner
+				v-if="hasRunner"
+				:source="contents"
+				:language="file.language"
+			/>
 			<!-- Overlays -->
 			<div class="loading" v-if="!loaded">
 				Loading...
@@ -247,6 +249,11 @@ Vue.component('editor-pane', {
 					break;
 				case 'JavaScript':
 					this.codemirrorInstance.setOption('mode', 'javascript');
+					this.codemirrorInstance.setOption('lineNumbers', true);
+					this.codemirrorInstance.setOption('lineWrapping', false);
+					break;
+				case 'Python':
+					this.codemirrorInstance.setOption('mode', 'python');
 					this.codemirrorInstance.setOption('lineNumbers', true);
 					this.codemirrorInstance.setOption('lineWrapping', false);
 					break;

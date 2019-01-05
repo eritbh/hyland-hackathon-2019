@@ -105,11 +105,16 @@ body {
 .editor-pane .code-runner {
 	grid-area: runner;
 	border-top: 1px solid #CCC;
+	display: flex;
+	flex-direction: column;
 }
 .editor-pane .code-runner .buttons {
 	border-bottom: 1px solid #CCC;
 	display: flex;
 	align-items: center;
-	height: 40px;
+	flex: 0 0 40px;
 	padding: 0 10px;
+}
+.editor-pane .code-runner .output {
+	overflow: auto;
 }
