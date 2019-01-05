@@ -50,6 +50,9 @@ Vue.component('gists-sidebar', {
 		display (filename) {
 			return filename.replace(/\.md$/, '');
 		},
+		date (gist) {
+			return new Date(gist.updated_at).toLocaleString();
+		},
 		remove (filename) {
 			if (confirm(`The file ${filename} will be removed from this gist. Are you sure?`)) {
 				fetch(`/api/gist/${this.selectedGistId}`, {
@@ -132,10 +135,7 @@ Vue.component('gists-sidebar', {
 				})
 			}).then(res => res.ok && res.json()).then(data => {
 				if (!data) return;
-				this.fetchGists().then(() => {
-					this.selectGist(data.id);
-					this.selectFile('README.md');
-				})
+				this.fetchGists();
 			})
 		},
 		renameGist (gistId) {
@@ -207,7 +207,8 @@ Vue.component('gists-sidebar', {
 						class="gist-item"
 						@click="selectGist(gist.id)"
 					>
-						{{name(gist)}}
+						<span class="name">{{name(gist)}}</span>
+						<small class="updated">{{date(gist)}}</small>
 						<span class="buttons">
 							<button @click.stop="renameGist(gist.id)" title="Rename gist"><i class="fas fa-fw fa-pencil-alt"/></button>
 							<button @click.stop="removeGist(gist.id)" title="Delete gist"><i class="fas fa-fw fa-times"/></button>
@@ -235,14 +236,16 @@ Vue.component('user-preview', {
 				Loading...
 			</template>
 			<template v-else-if="user">
-				<div class="user">
-					<img
-						:src="user.avatar_url"
-						width="32"
-						height="32"
-					/>
-					@{{user.login}}
-				</div>
+				<a :href="'https://gist.github.com/'+user.login" title="View on gist.github.com" target="_blank">
+					<div class="user">
+						<img
+							:src="user.avatar_url"
+							width="32"
+							height="32"
+						/>
+						{{user.login}}
+					</div>
+				</a>
 				<div class="controls">
 					<button @click="$emit('darkToggle')" title="Dark theme">
 						<i class="fas fa-fw fa-moon"/>

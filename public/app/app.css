@@ -74,9 +74,22 @@ body {
 .code-runner .buttons button:hover {
 	background: rgba(0,0,0,.1);
 }
+.dark .gists-sidebar .header button:hover,
+.dark .user-preview button:hover,
+.dark .markdown-toolbar button:hover,
+.dark .code-runner .buttons button:hover {
+	box-shadow: inset 0 0 0 1px black;
+}
 .user-preview button {
-	margin-right: 5px;
+	margin-right: 8px;
 	font-size: 1.25em;
+}
+.user-preview a {
+	color: inherit;
+	text-decoration: none;
+}
+.user-preview:hover {
+	text-decoration: underline;
 }
 .gists-sidebar .gists-list,
 .gists-sidebar .files-list {
@@ -93,6 +106,15 @@ body {
 	margin: 0;
 	padding: 5px 10px;
 }
+.gists-sidebar .gist-item {
+	border-bottom: 1px solid #DDD;
+}
+.gists-sidebar .gist-item small {
+	margin: 5px 0 2px;
+	display: block;
+	opacity: 0.7;
+	font-style: italic;
+}
 .gists-sidebar .gist-item > i,
 .gists-sidebar .file-item > i {
 	margin-right: 5px;
@@ -105,6 +127,10 @@ body {
 	align-items: center;
 	right: 5px;
 	display: none;
+}
+.gists-sidebar .gist-item .buttons {
+	top: unset;
+	bottom: 5px;
 }
 .gists-sidebar .gist-item:hover,
 .gists-sidebar .file-item:hover {
@@ -261,6 +287,7 @@ body {
 
 .app.dark,
 .app.dark .gists-sidebar,
+.app.dark .gists-sidebar .gist-item,
 .app.dark .user-preview,
 .app.dark .editor-pane .markdown-toolbar,
 .app.dark .editor-pane .code-runner,
