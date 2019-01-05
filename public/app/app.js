@@ -187,19 +187,23 @@ Vue.component('editor-pane', {
 				case 'Markdown':
 					this.codemirrorInstance.setOption('mode', 'gfm');
 					this.codemirrorInstance.setOption('lineNumbers', false);
+					this.codemirrorInstance.setOption('lineWrapping', true);
 					break;
 				case 'JavaScript':
 					this.codemirrorInstance.setOption('mode', 'javascript');
 					this.codemirrorInstance.setOption('lineNumbers', true);
+					this.codemirrorInstance.setOption('lineWrapping', false);
 					break;
 				case 'Text':
 				case null: // Plain text probably
 					this.codemirrorInstance.setOption('mode', null);
 					this.codemirrorInstance.setOption('lineNumbers', false);
+					this.codemirrorInstance.setOption('lineWrapping', true);
 					break;
 				default:
 					this.codemirrorInstance.setOption('mode', null);
 					this.codemirrorInstance.setOption('lineNumbers', true);
+					this.codemirrorInstance.setOption('lineWrapping', false);
 			}
 		},
 	},
