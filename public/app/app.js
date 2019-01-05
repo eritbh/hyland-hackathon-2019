@@ -55,7 +55,7 @@ Vue.component('user-preview', {
 					width="32"
 					height="32"
 				/>
-				Logged in as {{user.name}}
+				Logged in as {{user.login}}
 			</template>
 			<template v-else>
 				Not logged in - <a href="/auth/github">Log in with Github</a>
