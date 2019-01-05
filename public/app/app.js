@@ -62,7 +62,27 @@ Vue.component('gists-sidebar', {
 			}
 		},
 		rename (filename) {
-
+			let newName = prompt("Enter the file's new name", filename);
+			if (newName == null || newName === filename) return;
+			fetch(`/api/gist/${this.selectedGistId}`, {
+				method: 'PATCH',
+				body: JSON.stringify({
+					files: {
+						[filename]: {
+							filename: newName,
+						},
+					},
+				}),
+			}).then(res => {
+				if (!res.ok) return;
+				const fileObj = this.selectedGist.files[filename];
+				fileObj.filename = newName;
+				Vue.delete(this.selectedGist.files, filename);
+				Vue.set(this.selectedGist.files, newName, fileObj);
+				if (this.selectedFilename === filename) {
+					this.selectFile(newName);
+				}
+			});
 		},
 	},
 	template: `
