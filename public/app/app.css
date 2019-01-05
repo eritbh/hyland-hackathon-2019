@@ -90,5 +90,8 @@ body {
 	height: 100%;
 }
 .editor-pane .CodeMirror-scroll {
-	padding: 5px 5px 35px;
+	/* padding: 5px 5px 35px; */
+}
+.editor-pane .CodeMirror-linenumber {
+	/* margin-left: -10px; */
 }

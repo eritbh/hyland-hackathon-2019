@@ -120,30 +120,34 @@ Vue.component('user-preview', {
 
 Vue.component('markdown-toolbar', {
 	template: `
-		<div class="markdown-toolbar">
-			Toolbar
-			<button @click="$emit('save')">Save</button>
-		</div>
 	`
 })
 
 Vue.component('editor-pane', {
 	props: {
 		file: Object,
-		extraStyles: Boolean,
+		saveEnabled: Boolean,
 	},
 	data () {
 		return {
 			loaded: true,
 			contents: '',
 			codemirrorInstance: null,
+			extraStyles: true,
+			useCodeEditorForMarkdown: false,
 		};
 	},
 	template: `
 		<div :class="['editor-pane', {'extra-styles': extraStyles}]">
-			<markdown-toolbar
-				@save="$emit('save')"
-			/>
+			<div class="markdown-toolbar">
+				<div class="label">{{file ? file.filename : ''}}</div>
+				<button
+					@click="$emit('save')"
+					:disabled="!saveEnabled"
+				>
+					Save
+				</button>
+			</div>
 			<div class="pane-content">
 				<textarea
 					class="code-area"
@@ -178,13 +182,13 @@ Vue.component('editor-pane', {
 		},
 		updateCMSettings () {
 			if (!this.file) return;
-			switch (this.file.language) {
+			switch (this.useCodeEditorForMarkdown ? null : this.file.language) {
 				case 'Markdown':
 					this.codemirrorInstance.setOption('mode', 'gfm');
 					this.codemirrorInstance.setOption('lineNumbers', false);
 					break;
 				case "Text":
-				case null: // Plain text
+				case null: // Plain text probably
 					this.codemirrorInstance.setOption('mode', null);
 					this.codemirrorInstance.setOption('lineNumbers', false);
 					break;
@@ -202,6 +206,7 @@ Vue.component('editor-pane', {
 			this.contents = this.codemirrorInstance.getDoc().getValue();
 			this.$emit('change', this.contents);
 		});
+		// TODO: load settings from localstorage
 	},
 })
 
@@ -215,6 +220,7 @@ const app = new Vue({
 		currentFile: null,
 		fileContents: null,
 		contentsChanged: false,
+		saveEnabled: true,
 	},
 	template: `
 		<div class="app">
@@ -224,7 +230,7 @@ const app = new Vue({
 			/>
 			<editor-pane
 				:file="currentFile"
-				extraStyles
+				:saveEnabled="saveEnabled"
 				@change="fileContentsUpdated"
 				@initialValue="fileContents = $event"
 				@save="save"
@@ -241,6 +247,7 @@ const app = new Vue({
 			this.contentsChanged = true;
 		},
 		save () {
+			this.saveEnabled = false;
 			fetch(`/api/gist/${this.currentGist.id}`, {
 				method: 'PATCH',
 				body: JSON.stringify({
@@ -252,6 +259,7 @@ const app = new Vue({
 				}),
 			}).then(res => {
 				this.contentsChanged = false;
+				this.saveEnabled = true;
 			});
 		},
 	},
