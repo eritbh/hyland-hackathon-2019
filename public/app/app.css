@@ -12,14 +12,14 @@ body {
 	overflow: hidden;
 	display: grid;
 	grid:
-		"list editor" calc(100% - 50px)
-		"acct editor" 50px
+		"list editor" calc(100% - 51px)
+		"acct editor" 51px
 		/300px calc(100% - 300px);
 }
 .app.sidebar-hidden {
 	grid:
-		"list editor" calc(100% - 50px)
-		"acct editor" 50px
+		"list editor" calc(100% - 51px)
+		"acct editor" 51px
 		/0    100%;
 }
 .gists-sidebar {
@@ -30,7 +30,7 @@ body {
 	width: 300px;
 	grid-area: list;
 	overflow: hidden;
-	background: #EEE;
+	background: #f7f7f7;
 	border-right: 1px solid #CCC;
 	transition: left 300ms;
 	z-index: 11;
@@ -43,8 +43,8 @@ body {
 	font-size: 1.5em;
 	margin: 0;
 	padding: 5px 0;
-	background: #eee;
-	height: 50px;
+	background: #f7f7f7;
+	height: 51px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -56,7 +56,8 @@ body {
 }
 .gists-sidebar .header button,
 .user-preview button,
-.markdown-toolbar button {
+.markdown-toolbar button,
+.code-runner .buttons button {
 	background: none;
 	border: none;
 	padding: 4px 4px;
@@ -65,7 +66,8 @@ body {
 }
 .gists-sidebar .header button:hover,
 .user-preview button:hover,
-.markdown-toolbar button:hover {
+.markdown-toolbar button:hover,
+.code-runner .buttons button:hover {
 	background: rgba(0,0,0,.1);
 }
 .user-preview button {
@@ -77,7 +79,7 @@ body {
 	margin: 0;
 	padding: 0;
 	cursor: default;
-	height: calc(100% - 50px);
+	height: calc(100% - 51px);
 	overflow-y: auto;
 }
 .gists-sidebar .gist-item,
@@ -119,8 +121,11 @@ body {
 .gists-sidebar .buttons button:hover {
 	background: rgba(0,0,0,0.1);
 }
+.gists-sidebar .file-item.active,
+.gists-sidebar .file-item.active .fas {
+	color: #f44336 !important;
+}
 .gists-sidebar .file-item.active {
-	box-shadow: inset -5px 0 #f44336;
 	background: rgba(0,0,0,0.1);
 }
 
@@ -129,9 +134,9 @@ body {
 	bottom: 0;
 	left: 0;
 	width: 300px;
-	height: 50px;
+	height: 51px;
 	grid-area: acct;
-	background: #DDD;
+	background: #f7f7f7;
 	border-top: 1px solid #CCC;
 	border-right: 1px solid #CCC;
 	display: flex;
@@ -170,23 +175,25 @@ body {
 	padding: 0 10px;
 	display: flex;
 	align-items: center;
-	height: 50px;
+	height: 51px;
 }
-.markdown-toolbar .label {
+.markdown-toolbar .label,
+.code-runner .buttons .label {
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
-	height: 50px;
-	line-height: 50px;
+	height: 51px;
+	line-height: 51px;
 	text-align: center;
 	pointer-events: none;
 }
 .editor-pane .markdown-toolbar > * {
 	margin-right: 5px;
 }
-.markdown-toolbar button {
-	font-size: 1.25em;
+.markdown-toolbar button,
+.code-runner .buttons button {
+	font-size: 1.5em;
 }
 .editor-pane .loading,
 .editor-pane .no-file {
@@ -207,7 +214,7 @@ body {
 	padding: 0;
 	border: 0;
 	width: 100%;
-	height: calc(100% - 50px);
+	height: calc(100% - 51px);
 }
 .editor-pane .CodeMirror-scroll {
 	/* padding: 5px 5px 35px; */
@@ -225,18 +232,23 @@ body {
 	overflow-y: auto;
 }
 .editor-pane .code-runner .buttons {
+	position: relative;
 	border-bottom: 1px solid #CCC;
 	display: flex;
 	align-items: center;
-	height: 50px;
+	height: 51px;
 	padding: 0 10px;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 .editor-pane .code-runner .output {
 	flex: 1 1 100%;
 	overflow: auto;
 }
 .editor-pane .code-runner.collapsed {
-	flex: 0 0 50px;
+	flex: 0 0 51px;
 	overflow-y: hidden;
 }
 .editor-pane .code-runner.collapsed .CodeMirror {
@@ -259,11 +271,9 @@ body {
 .app.dark .fas {
 	color: white !important;
 }
-.app.dark .gists-sidebar {
-	background: #242424;
-}
+.app.dark .gists-sidebar,
 .app.dark .user-preview {
-	background: #121212;
+	background: #242424;
 }
 .app.dark .editor-pane .markdown-toolbar,
 .app.dark .editor-pane .code-runner .buttons {

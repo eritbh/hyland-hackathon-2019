@@ -176,7 +176,7 @@ Vue.component('code-runner', {
 	},
 	data () {
 		return {
-			result: 'Hit "Run" to see the result.',
+			result: 'Hit the "Run" button to see the result.',
 			running: false,
 			codemirrorInstance: null,
 			collapsed: false,
@@ -217,7 +217,7 @@ Vue.component('code-runner', {
 			this.codemirrorInstance.setOption('mode', newLanguage.toLowerCase())
 		},
 		filename () {
-			this.result = 'Hit "Run" to see the result.';
+			this.result = 'Hit the "Run" button to see the result.';
 		},
 		dark (dark) {
 			this.codemirrorInstance.setOption('theme', dark ? 'darcula' : 'default');
@@ -226,8 +226,13 @@ Vue.component('code-runner', {
 	template: `
 		<div :class="['code-runner', {collapsed}]">
 			<div class="buttons" @dblclick="collapsed = !collapsed">
-				<button class="run" @click="run">Run</button>
-				<button @click="collapsed = !collapsed">{{collapsed ? 'Expand' : 'Collapse'}}</button>
+				<button @click="collapsed = !collapsed" :title="collapsed ? 'Expand output' : 'Collapse output'">
+					<i :class="['fas fa-fw fa-angle-down', {'fa-flip-vertical': collapsed}]"/>
+				</button>
+				<button class="run" @click="run" title="Run" v-if="!collapsed">
+					<i class="fas fa-fw fa-arrow-alt-circle-right"/>
+				</button>
+				<span class="label">Output</span>
 			</div>
 			<textarea id="output-textarea" disabled/>
 		</div>
@@ -239,6 +244,7 @@ Vue.component('code-runner', {
 			lineNumbers: false,
 			readOnly: true,
 			cursorBlinkRate: -1,
+			theme: this.dark ? 'darcula' : 'default'
 		});
 		this.codemirrorInstance.getDoc().setValue(this.paneText);
 	},
