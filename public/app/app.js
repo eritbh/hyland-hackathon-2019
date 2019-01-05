@@ -23,6 +23,15 @@ Vue.component('gists-sidebar', {
 		}
 	},
 	methods: {
+		fetchGists () {
+			this.loaded = false;
+			return fetch('/api/gists').then(res => {
+				this.loaded = true;
+				return res;
+			}).then(res => res.ok && res.json()).then(data => {
+				this.gists = data || [];
+			});
+		},
 		name (gist) {
 			// Return filename of the first file (TODO)
 			return gist.description || Object.keys(gist.files)[0] || '<no content>';
@@ -90,7 +99,22 @@ Vue.component('gists-sidebar', {
 			}
 		},
 		createFile () {
-			alert('Create a file here');
+			let filename = prompt('What should the file be called?', '');
+			if (!filename) return;
+			fetch(`/api/gist/${this.selectedGistId}`, {
+				method: 'PATCH',
+				body: JSON.stringify({
+					files: {
+						[filename]: {
+							content: 'New File',
+						},
+					},
+				}),
+			}).then(res => {
+				this.fetchGists().then(() => {
+					this.selectFile(filename);
+				});
+			});
 		},
 		createGist () {
 			alert('Create a gist here');
@@ -149,12 +173,7 @@ Vue.component('gists-sidebar', {
 		</div>
 	`,
 	mounted () {
-		fetch('/api/gists').then(res => {
-			this.loaded = true;
-			return res;
-		}).then(res => res.ok && res.json()).then(data => {
-			this.gists = data || [];
-		});
+		this.fetchGists()
 	},
 });
 
