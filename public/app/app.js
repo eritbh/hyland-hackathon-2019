@@ -186,6 +186,7 @@ Vue.component('gists-sidebar', {
 					</button>
 				</h1>
 				<ul class="files-list" v-if="selectedGist">
+					<li class="gist-name">{{name(selectedGist)}}</li>
 					<li
 						v-for="file, filename in selectedGist.files"
 						:key="filename"
