@@ -12,8 +12,8 @@ body {
 	overflow: hidden;
 	display: grid;
 	grid:
-		"list editor" calc(100% - 60px)
-		"acct editor" 60px
+		"list editor" calc(100% - 50px)
+		"acct editor" 50px
 		/300px calc(100% - 300px);
 }
 
@@ -24,14 +24,65 @@ body {
 	background: #EEE;
 	border-right: 1px solid #CCC;
 }
-.gists-sidebar .gists-list {
+.gists-sidebar .header {
+	font-size: 1.5em;
+	margin: 0;
+	padding: 5px 0;
+	background: #eee;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-bottom: 1px solid #ccc;
+}
+.gists-sidebar .header button {
+	position: absolute;
+	left: 5px;
+}
+.gists-sidebar .gists-list,
+.gists-sidebar .files-list {
 	margin: 0;
 	padding: 0;
+	cursor: default;
 }
-.gists-sidebar .gist-item {
+.gists-sidebar .gist-item,
+.gists-sidebar .file-item {
+	position: relative;
 	list-style: none;
 	margin: 0;
 	padding: 5px 10px;
+}
+.gists-sidebar .gist-item .buttons,
+.gists-sidebar .file-item .buttons {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	align-items: center;
+	right: 5px;
+	display: none;
+}
+.gists-sidebar .gist-item:hover,
+.gists-sidebar .file-item:hover {
+	background: rgba(0,0,0,0.1);
+}
+.gists-sidebar .gist-item:hover .buttons,
+.gists-sidebar .file-item:hover .buttons {
+	display: flex;
+}
+.gists-sidebar .buttons button {
+	border: 0;
+	background: none;
+	font: inherit;
+	padding: 1px 3px;
+	margin: 0 2px 0 0;
+	border-radius: 5px;
+}
+.gists-sidebar .buttons button:hover {
+	background: rgba(0,0,0,0.1);
+}
+.gists-sidebar .file-item.active {
+	box-shadow: inset -5px 0 #f44336;
+	background: rgba(0,0,0,0.1);
 }
 
 .user-preview {
@@ -65,7 +116,7 @@ body {
 	padding: 0 10px;
 	display: flex;
 	align-items: center;
-	height: 40px;
+	height: 50px;
 }
 .editor-pane .loading,
 .editor-pane .no-file {
@@ -87,13 +138,17 @@ body {
 	padding: 0;
 	border: 0;
 	width: 100%;
-	height: calc(100% - 40px);
+	height: calc(100% - 50px);
 }
 .editor-pane .CodeMirror-scroll {
 	/* padding: 5px 5px 35px; */
 }
 .editor-pane .CodeMirror-linenumber {
 	/* margin-left: -10px; */
+}
+.markdown .pane-content .CodeMirror {
+	max-width: 50em;
+	margin: 0 auto;
 }
 .editor-pane .code-runner {
 	flex: 0 0 50%;
@@ -104,7 +159,7 @@ body {
 	border-bottom: 1px solid #CCC;
 	display: flex;
 	align-items: center;
-	height: 40px;
+	height: 50px;
 	padding: 0 10px;
 }
 .editor-pane .code-runner .output {
@@ -112,9 +167,29 @@ body {
 	overflow: auto;
 }
 .editor-pane .code-runner.collapsed {
-	flex: 0 0 40px;
+	flex: 0 0 50px;
 	overflow-y: hidden;
 }
 .editor-pane .code-runner.collapsed .CodeMirror {
 	display: none;
+}
+
+.app.dark .gists-sidebar,
+.app.dark .user-preview,
+.app.dark .editor-pane .markdown-toolbar,
+.app.dark .editor-pane .code-runner,
+.app.dark .editor-pane .code-runner .buttons {
+	border-color: #000;
+	background: #2b2b2b;
+	color: white;
+}
+.app.dark .gists-sidebar {
+	background: #242424;
+}
+.app.dark .user-preview {
+	background: #121212;
+}
+.app.dark .editor-pane .markdown-toolbar,
+.app.dark .editor-pane .code-runner .buttons {
+	background: #313335;
 }

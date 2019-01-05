@@ -38,7 +38,7 @@ Vue.component('gists-sidebar', {
 			}
 		},
 		icon (filename) {
-			return /\.(md|markdown)$/.test(filename) ? 'fa-book' : 'fa-code';
+			return /\.(md|markdown)$/.test(filename) ? 'fa-book' : /\.(rb|js|py)$/.test(filename) ? 'fa-code' : 'fa-file';
 		},
 		display (filename) {
 			return filename.replace(/\.md$/, '');
@@ -50,7 +50,7 @@ Vue.component('gists-sidebar', {
 				Loading...
 			</div>
 			<template v-else>
-				<h1>
+				<h1 class="header">
 					<button v-if="selectedGist" @click="selectGist(null)">Back</button>
 					{{selectedGist ? 'Files' : 'My Gists'}}
 				</h1>
@@ -58,11 +58,15 @@ Vue.component('gists-sidebar', {
 					<li
 						v-for="file, filename in selectedGist.files"
 						:key="filename"
-						class="file-item"
+						:class="['file-item', {active: filename === selectedFilename}]"
 						@click="selectFile(filename)"
 					>
 						<i :class="['fas fa-fw', icon(filename)]"/>
 						{{display(filename)}}
+						<span class="buttons">
+							<button class="delete"><i class="fas fa-fw fa-times"/></button>
+							<button class="rename"><i class="fas fa-fw fa-pencil-alt"/></button>
+						</span>
 					</li>
 				</ul>
 				<ul class="gists-list" v-else>
@@ -107,9 +111,13 @@ Vue.component('user-preview', {
 					height="32"
 				/>
 				<div class="text">
-					Logged in as {{user.login}}<br>
+					@{{user.login}}<br>
 					<a href="/logout">Log Out</a>
 				</div>
+				<div class="controls">
+					<button @click="$emit('darkToggle')">
+						<i class="fas fa-moon"/>
+					</button>
 			</template>
 			<template v-else>
 				<div class="text">
@@ -134,6 +142,7 @@ Vue.component('code-runner', {
 		source: String,
 		language: String,
 		filename: String, // only used for clearing output on file change
+		dark: Boolean,
 	},
 	data () {
 		return {
@@ -180,6 +189,9 @@ Vue.component('code-runner', {
 		filename () {
 			this.result = 'Hit "Run" to see the result.';
 		},
+		dark (dark) {
+			this.codemirrorInstance.setOption('theme', dark ? 'darcula' : 'default');
+		},
 	},
 	template: `
 		<div :class="['code-runner', {collapsed}]">
@@ -206,6 +218,7 @@ Vue.component('editor-pane', {
 	props: {
 		file: Object,
 		saveEnabled: Boolean,
+		dark: Boolean,
 	},
 	data () {
 		return {
@@ -226,7 +239,7 @@ Vue.component('editor-pane', {
 		},
 	},
 	template: `
-		<div :class="['editor-pane', {'extra-styles': extraStyles, 'has-runner': hasRunner}]">
+		<div :class="['editor-pane', {'extra-styles': extraStyles, 'has-runner': hasRunner, 'markdown': file && file.language === 'Markdown'}]">
 			<div class="pane-content">
 				<div class="markdown-toolbar">
 					<div class="label">{{file ? file.filename : ''}}</div>
@@ -247,6 +260,7 @@ Vue.component('editor-pane', {
 				:source="contents"
 				:language="file.language"
 				:filename="file.filename"
+				:dark="dark"
 			/>
 			<!-- Overlays -->
 			<div class="loading" v-if="!loaded">
@@ -268,6 +282,9 @@ Vue.component('editor-pane', {
 				this.updateContents(text || '');
 				this.updateCMSettings();
 			});
+		},
+		dark (dark) {
+			this.codemirrorInstance.setOption('theme', dark ? 'darcula' : 'default');
 		},
 	},
 	methods: {
@@ -314,7 +331,7 @@ Vue.component('editor-pane', {
 		});
 		// TODO: load settings from localstorage
 	},
-})
+});
 
 // Create the main Vue instance
 const app = new Vue({
@@ -327,16 +344,20 @@ const app = new Vue({
 		fileContents: null,
 		contentsChanged: false,
 		saveEnabled: true,
+		darkTheme: false,
 	},
 	template: `
-		<div class="app">
-			<user-preview/>
+		<div :class="['app', {dark: darkTheme}]">
+			<user-preview
+				@darkToggle="darkTheme = !darkTheme"
+			/>
 			<gists-sidebar
 				@change="fileUpdate"
 			/>
 			<editor-pane
 				:file="currentFile"
 				:saveEnabled="saveEnabled"
+				:dark="darkTheme"
 				@change="fileContentsUpdated"
 				@initialValue="fileContentsInitial"
 				@save="save"
