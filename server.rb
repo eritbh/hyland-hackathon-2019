@@ -16,6 +16,18 @@ end
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
+
+  def gh_request(url)
+    response = HTTParty.get url, {
+      headers: {
+        "Authorization" => "token #{session[:access_token]}",
+        "Accept" => "application/json",
+        "User-Agent" => "Geo1088"
+      }
+    }
+    content_type "application/json"
+    response.body
+  end
 end
 
 get "/auth/github" do
@@ -47,19 +59,15 @@ get "/auth/github/callback" do
   halt "access token stored in session"
 end
 
-get "/api/gists" do
-  response = HTTParty.get "https://api.github.com/gists", {
-    headers: {
-      "Authorization" => "token #{session[:access_token]}",
-      "Accept" => "application/json",
-      "User-Agent" => "Geo1088"
-    }
-  }
-  content_type "application/json"
-  response.body
+get "/api/me" do
+  gh_request "https://api.github.com/user"
 end
 
-get "/gist/:id" do
+get "/api/gists" do
+  gh_request "https://api.github.com/gists"
+end
+
+get "/api/gist/:id" do
   # TODO: Return the content of the gist for the client
 end
 
