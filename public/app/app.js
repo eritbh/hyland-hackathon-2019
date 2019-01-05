@@ -25,7 +25,7 @@ Vue.component('gists-sidebar', {
 	methods: {
 		name (gist) {
 			// Return filename of the first file (TODO)
-			return Object.keys(gist.files)[0];
+			return gist.description || Object.keys(gist.files)[0];
 		},
 		selectGist (gistId) {
 			this.selectedGistId = gistId;
@@ -36,7 +36,13 @@ Vue.component('gists-sidebar', {
 			if (filename != null) {
 				this.$emit('change', this.selectedGist, this.selectedFile);
 			}
-		}
+		},
+		icon (filename) {
+			return /\.(md|markdown)$/.test(filename) ? 'fa-book' : 'fa-code';
+		},
+		display (filename) {
+			return filename.replace(/\.md$/, '');
+		},
 	},
 	template: `
 		<div class="gists-sidebar">
@@ -55,7 +61,8 @@ Vue.component('gists-sidebar', {
 						class="file-item"
 						@click="selectFile(filename)"
 					>
-						{{filename}}
+						<i :class="['fas fa-fw', icon(filename)]"/>
+						{{display(filename)}}
 					</li>
 				</ul>
 				<ul class="gists-list" v-else>
