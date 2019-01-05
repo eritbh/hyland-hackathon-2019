@@ -82,6 +82,19 @@ Vue.component('gists-sidebar', {
 				}
 			});
 		},
+		createFileOrGist () {
+			if (this.selectedGist) {
+				this.createFile();
+			} else {
+				this.createGist();
+			}
+		},
+		createFile () {
+			alert('Create a file here');
+		},
+		createGist () {
+			alert('Create a gist here');
+		},
 	},
 	template: `
 		<div class="gists-sidebar">
@@ -91,6 +104,7 @@ Vue.component('gists-sidebar', {
 			<template v-else>
 				<h1 class="header">
 					<button
+						class="back"
 						v-if="selectedGist"
 						@click="selectGist(null)"
 						title="Back to list of gists"
@@ -98,6 +112,13 @@ Vue.component('gists-sidebar', {
 						<i class="fas fa-fw fa-arrow-left"/>
 					</button>
 					{{selectedGist ? 'Files' : 'My Gists'}}
+					<button
+						class="new"
+						@click="createFileOrGist"
+						:title="selectedGist ? 'Create new file' : 'Create new gist'"
+					>
+						<i class="fas fa-fw fa-plus"/>
+					</button>
 				</h1>
 				<ul class="files-list" v-if="selectedGist">
 					<li

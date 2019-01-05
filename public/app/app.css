@@ -50,9 +50,13 @@ body {
 	justify-content: center;
 	border-bottom: 1px solid #ccc;
 }
-.gists-sidebar .header button {
+.gists-sidebar .header .back {
 	position: absolute;
-	left: 5px;
+	left: 7px;
+}
+.gists-sidebar .header .new {
+	position: absolute;
+	right: 7px;
 }
 .gists-sidebar .header button,
 .user-preview button,
