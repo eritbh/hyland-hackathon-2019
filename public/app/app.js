@@ -33,9 +33,7 @@ Vue.component('gists-sidebar', {
 		},
 		selectFile (filename) {
 			this.selectedFilename = filename;
-			if (filename != null) {
-				this.$emit('change', this.selectedGist, this.selectedFile);
-			}
+			this.$emit('change', this.selectedGist, this.selectedFile);
 		},
 		icon (filename) {
 			return /\.(md|markdown)$/.test(filename) ? 'fa-book' : /\.(rb|js|py)$/.test(filename) ? 'fa-code' : 'fa-file';
