@@ -511,7 +511,7 @@ const app = new Vue({
 		fileContents: null,
 		contentsChanged: false,
 		saveEnabled: true,
-		darkTheme: !!localStorage.getItem('darkTheme'),
+		darkTheme: localStorage.getItem('theme') === 'dark',
 		sidebarHidden: false,
 	},
 	template: `
@@ -535,7 +535,7 @@ const app = new Vue({
 	`,
 	watch: {
 		darkTheme (dark) {
-			localStorage.setItem('darkTheme', dark);
+			localStorage.setItem('theme', dark ? 'dark' : 'light');
 		},
 	},
 	methods: {

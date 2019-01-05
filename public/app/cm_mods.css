@@ -1,5 +1,5 @@
-
-/* Default theme mods */
+/* Theme mod - headers in markdown are the theme orange */
+.cm-s-darcula .cm-header,
 .cm-s-default .cm-header {
 	color: #f44336;
 }
