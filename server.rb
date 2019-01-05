@@ -103,6 +103,13 @@ post "/api/gist" do
   }
 end
 
+delete "/api/gists/:id" do |id|
+  gh_request "https://api.github.com/gists/#{id}", {
+    method: :delete,
+    error: [401]
+  }
+end
+
 get "/" do
   redirect to "/home.html"
 end

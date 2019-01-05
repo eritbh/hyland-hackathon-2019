@@ -138,6 +138,28 @@ Vue.component('gists-sidebar', {
 				})
 			})
 		},
+		renameGist (gistId) {
+			const newDescription = prompt('New description for the gist?', '');
+			if (!newDescription) return;
+			fetch(`/api/gist/${gistId}`, {
+				method: 'PATCH',
+				body: JSON.stringify({
+					description: newDescription,
+				}),
+			}).then(res => res.ok && res.json()).then(data => {
+				if (!data) return;
+				this.fetchGists();
+			});
+		},
+		removeGist (gistId) {
+			if (!confirm('This gist will be removed permanently! Are you sure?')) return;
+			fetch(`/api/gists/${gistId}`, {
+				method: 'DELETE',
+			}).then(res => {
+				if (!res.ok) return;
+				this.fetchGists();
+			})
+		},
 	},
 	template: `
 		<div class="gists-sidebar">
@@ -186,6 +208,10 @@ Vue.component('gists-sidebar', {
 						@click="selectGist(gist.id)"
 					>
 						{{name(gist)}}
+						<span class="buttons">
+							<button @click.stop="renameGist(gist.id)" title="Rename gist"><i class="fas fa-fw fa-pencil-alt"/></button>
+							<button @click.stop="removeGist(gist.id)" title="Delete gist"><i class="fas fa-fw fa-times"/></button>
+						</span>
 					</li>
 				</ul>
 			</template>
