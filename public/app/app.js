@@ -141,16 +141,22 @@ Vue.component('editor-pane', {
 	},
 	template: `
 		<div :class="['editor-pane', {'extra-styles': extraStyles}]">
+			<markdown-toolbar
+				@save="$emit('save')"
+			/>
+			<div class="pane-content">
+				<textarea
+					class="code-area"
+					id="main-textarea"
+				/>
+			</div>
+			<!-- Overlays -->
 			<div class="loading" v-if="!loaded">
 				Loading...
 			</div>
 			<div class="no-file" v-else-if="!file">
 				No file selected
 			</div>
-			<textarea
-				class="code-area"
-				id="main-textarea"
-			/>
 		</div>
 	`,
 	watch: {
@@ -216,14 +222,12 @@ const app = new Vue({
 			<gists-sidebar
 				@change="fileUpdate"
 			/>
-			<markdown-toolbar
-				@save="save"
-			/>
 			<editor-pane
 				:file="currentFile"
 				extraStyles
 				@change="fileContentsUpdated"
 				@initialValue="fileContents = $event"
+				@save="save"
 			/>
 		</div>
 	`,
