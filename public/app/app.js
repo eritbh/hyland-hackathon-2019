@@ -1,4 +1,4 @@
-/* global Vue */
+/* globals Vue, CodeMirror */
 'use strict';
 
 Vue.component('gists-sidebar', {
@@ -135,6 +135,7 @@ Vue.component('editor-pane', {
 		return {
 			loaded: true,
 			contents: '',
+			codemirrorInstance: null,
 		};
 	},
 	template: `
@@ -147,8 +148,7 @@ Vue.component('editor-pane', {
 			</div>
 			<textarea
 				class="code-area"
-				v-else
-				v-model="contents"
+				id="main-textarea"
 			/>
 		</div>
 	`,
@@ -157,19 +157,26 @@ Vue.component('editor-pane', {
 			if (!newFile) return;
 			this.loaded = false;
 			fetch(newFile.raw_url).then(res => res.text()).then(contents => {
-				this.contents = contents;
-				console.log('hopefully this happens second');
+				this.updateContents(contents);
+				this.loaded = true;
 			});
 		},
-		contents (newContents) {
-			console.log('hi');
-			if (!this.loaded) {
-				this.loaded = true;
-				this.$emit('initialValue', newContents);
-			} else {
-				this.$emit('change', newContents);
-			}
+	},
+	methods: {
+		updateContents (contents) {
+			this.contents = contents;
+			this.codemirrorInstance.getDoc().setValue(contents);
+			this.$emit('initialValue', contents);
 		}
+	},
+	mounted () {
+		this.codemirrorInstance = CodeMirror.fromTextArea(document.getElementById('main-textarea'), {
+			lineNumbers: true,
+		});
+		this.codemirrorInstance.on('change', () => {
+			this.contents = this.codemirrorInstance.getDoc().getValue();
+			this.$emit('change', this.contents);
+		});
 	},
 })
 
@@ -202,12 +209,6 @@ const app = new Vue({
 	`,
 	methods: {
 		fileUpdate (gist, file) {
-			if (this.contentsChanged) {
-				response = prompt("You have unsaved changes, do you want to abandon them?");
-				if (response == false) {
-					return;
-				}
-			}
 			this.currentFile = file;
 			this.currentGist = gist;
 		},
