@@ -130,6 +130,7 @@ Vue.component('markdown-toolbar', {
 Vue.component('editor-pane', {
 	props: {
 		file: Object,
+		extraStyles: Boolean,
 	},
 	data () {
 		return {
@@ -139,7 +140,7 @@ Vue.component('editor-pane', {
 		};
 	},
 	template: `
-		<div class="editor-pane">
+		<div :class="['editor-pane', {'extra-styles': extraStyles}]">
 			<div class="loading" v-if="!loaded">
 				Loading...
 			</div>
@@ -173,11 +174,16 @@ Vue.component('editor-pane', {
 			if (!this.file) return;
 			switch (this.file.language) {
 				case 'Markdown':
+					this.codemirrorInstance.setOption('mode', 'gfm');
+					this.codemirrorInstance.setOption('lineNumbers', false);
+					break;
 				case "Text":
 				case null: // Plain text
+					this.codemirrorInstance.setOption('mode', null);
 					this.codemirrorInstance.setOption('lineNumbers', false);
 					break;
 				default:
+					this.codemirrorInstance.setOption('mode', null);
 					this.codemirrorInstance.setOption('lineNumbers', true);
 			}
 		},
@@ -215,6 +221,7 @@ const app = new Vue({
 			/>
 			<editor-pane
 				:file="currentFile"
+				extraStyles
 				@change="fileContentsUpdated"
 				@initialValue="fileContents = $event"
 			/>

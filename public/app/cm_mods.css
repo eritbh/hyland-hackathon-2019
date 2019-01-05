@@ -1,0 +1,19 @@
+.extra-styles .cm-header-1 { font-size: 2em; }
+.extra-styles .cm-header-2 { font-size: 1.5em; }
+.extra-styles .cm-header-3 { font-size: 1.33em; }
+.extra-styles .cm-header-5 { font-weight: 400; text-decoration: underline; }
+.extra-styles .cm-header-6 { font-weight: 400; font-style: italic; }
+.extra-styles .cm-hr {
+	font-weight: bold;
+	color: rgba(0, 0, 0, 0.1);
+}
+.extra-styles .cm-hr::after {
+	content: "";
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: calc(50% - 1px);
+	height: 1px;
+	background: #DDD;
+}
