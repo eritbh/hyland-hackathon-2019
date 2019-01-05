@@ -126,11 +126,13 @@ Vue.component('code-runner', {
 	props: {
 		source: String,
 		language: String,
+		filename: String, // only used for clearing output on file change
 	},
 	data () {
 		return {
 			result: '',
 			running: false,
+			codemirrorInstance: null,
 		};
 	},
 	computed: {
@@ -150,10 +152,24 @@ Vue.component('code-runner', {
 		run () {
 			this.running = true;
 			fetch(this.url).then(res => res.text()).then(text => {
-				this.result = text;
+				this.result = text
+					// strip first and last lines (fenced code blocks)
+					.replace(/.*?\n/, '')
+					.replace(/\n.*?(\n?)$/, '$1'); // preserves trailing newline
 				this.running = false;
 			})
 		}
+	},
+	watch: {
+		paneText (newText) {
+			this.codemirrorInstance.getDoc().setValue(newText);
+		},
+		language (newLanguage) {
+			this.codemirrorInstance.setOption('mode', newLanguage.toLowerCase())
+		},
+		filename () {
+			this.result = '';
+		},
 	},
 	template: `
 		<div class="code-runner">
@@ -161,10 +177,18 @@ Vue.component('code-runner', {
 				<button class="run" @click="run">Run</button>
 			</div>
 			<div class="output">
-				<pre><code>{{paneText}}</code></pre>
+				<textarea id="output-textarea" disabled/>
 			</div>
 		</div>
 	`,
+	mounted () {
+		this.codemirrorInstance = CodeMirror.fromTextArea(document.getElementById('output-textarea'), {
+			mode: this.language.toLowerCase(),
+			lineWrapping: true,
+			lineNumbers: false,
+			readOnly: true,
+		});
+	},
 })
 
 Vue.component('editor-pane', {
@@ -210,6 +234,7 @@ Vue.component('editor-pane', {
 				v-if="hasRunner"
 				:source="contents"
 				:language="file.language"
+				:filename="file.filename"
 			/>
 			<!-- Overlays -->
 			<div class="loading" v-if="!loaded">
