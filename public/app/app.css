@@ -1,0 +1,64 @@
+*, *:before, *:after {box-sizing: border-box}
+body {
+	font-family: sans-serif;
+}
+
+.app {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	overflow: hidden;
+	display: grid;
+	grid:
+		"list toolbar" 40px
+		"list editor" calc(100% - 100px)
+		"acct editor" 60px
+		/250px calc(100% - 250px);
+}
+
+.gists-sidebar {
+	grid-area: list;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	background: #EEE;
+	border-right: 1px solid #CCC;
+}
+.gists-sidebar .gists-list {
+	margin: 0;
+	padding: 0;
+}
+.gists-sidebar .gist-item {
+	list-style: none;
+	margin: 0;
+	padding: 5px 10px;
+}
+
+.user-preview {
+	grid-area: acct;
+	background: #DDD;
+	border-top: 1px solid #CCC;
+	border-right: 1px solid #CCC;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.user-preview img {
+	margin-right: 10px;
+}
+
+.markdown-toolbar {
+	grid-area: toolbar;
+	border-bottom: 1px solid #CCC;
+	padding: 0 10px;
+	display: flex;
+	align-items: center;
+}
+
+.editor-pane {
+	grid-area: editor;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

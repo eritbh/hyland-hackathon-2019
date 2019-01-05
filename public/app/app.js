@@ -1,7 +1,7 @@
 /* global Vue */
 'use strict';
 
-Vue.component('gists-list', {
+Vue.component('gists-sidebar', {
 	props: {
 		username: String,
 	},
@@ -17,8 +17,9 @@ Vue.component('gists-list', {
 		}
 	},
 	template: `
-		<div class="gists-list">
-			<ul>
+		<div class="gists-sidebar">
+			<ul class="gists-list">
+				<h1>My Gists</h1>
 				<li
 					v-for="gist in gists"
 					:key="gist.id"
@@ -55,10 +56,16 @@ Vue.component('user-preview', {
 					width="32"
 					height="32"
 				/>
-				Logged in as {{user.login}}
+				<div class="text">
+					Logged in as {{user.login}}<br>
+					<a href="/logout">Log Out</a>
+				</div>
 			</template>
 			<template v-else>
-				Not logged in - <a href="/auth/github">Log in with Github</a>
+				<div class="text">
+					Not logged in<br>
+					<a href="/auth/github">Log in with Github</a>
+				</div>
 			</template>
 		</div>
 	`,
@@ -72,6 +79,22 @@ Vue.component('user-preview', {
 	},
 })
 
+Vue.component('markdown-toolbar', {
+	template: `
+		<div class="markdown-toolbar">
+			Toolbar
+		</div>
+	`
+})
+
+Vue.component('editor-pane', {
+	template: `
+		<div class="editor-pane">
+			Editor
+		</div>
+	`
+})
+
 // Create the main Vue instance
 new Vue({
 	el: '#app',
@@ -82,7 +105,9 @@ new Vue({
 	template: `
 		<div class="app">
 			<user-preview/>
-			<gists-list username="geo1088"/>
+			<gists-sidebar username="geo1088"/>
+			<markdown-toolbar/>
+			<editor-pane/>
 		</div>
 	`,
 });
