@@ -41,6 +41,8 @@ Vue.component('gists-list', {
 new Vue({
 	el: '#app',
 	template: `
-		<gists-list username="geo1088"/>
+		<div class="app">
+			<gists-list username="geo1088"/>
+		</div>
 	`,
 });
