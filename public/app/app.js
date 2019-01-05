@@ -141,17 +141,35 @@ Vue.component('editor-pane', {
 	props: {
 		file: Object,
 	},
-	computed: {
-		contents () {
-			if (!this.file) return ''
-			return this.file.raw_url
-		},
+	data () {
+		return {
+			loaded: true,
+			contents: '',
+		};
 	},
 	template: `
 		<div class="editor-pane">
-			<pre class="code-editor"><code>{{contents}}</code></pre>
+			<div class="loading" v-if="!loaded">
+				Loading...
+			</div>
+			<div class="no-file" v-else-if="!file">
+				No file selected
+			</div>
+			<pre class="code-editor" v-else><code>{{contents}}</code></pre>
 		</div>
 	`,
+	watch: {
+		file (newFile) {
+			if (!newFile) return;
+			this.loaded = false;
+			fetch(newFile.raw_url).then(res => res.text()).then(contents => {
+				this.contents = contents;
+				this.loaded = true;
+			}).catch(err => {
+				this.loaded = true;
+			})
+		}
+	},
 })
 
 // Create the main Vue instance
