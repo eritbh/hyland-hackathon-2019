@@ -164,21 +164,32 @@ Vue.component('editor-pane', {
 			this.loaded = false;
 			fetch(newFile.raw_url).then(res => res.text()).then(contents => {
 				this.contents = contents;
-				this.loaded = true;
+				console.log('hopefully this happens second');
 			}).catch(err => {
 				this.loaded = true;
 			})
+		},
+		contents (newContents) {
+			console.log('hi');
+			if (!this.loaded) {
+				this.loaded = true;
+				this.$emit('initialValue', newContents);
+			} else {
+				this.$emit('change', newContents);
+			}
 		}
 	},
 })
 
 // Create the main Vue instance
-new Vue({
+const app = new Vue({
 	el: '#app',
 	data: {
 		user: null,
 		loaded: false,
 		currentFile: null,
+		fileContents: null,
+		contentsChanged: false,
 	},
 	template: `
 		<div class="app">
@@ -189,12 +200,40 @@ new Vue({
 			<markdown-toolbar/>
 			<editor-pane
 				:file="currentFile"
+				@change="fileContentsUpdated"
+				@initialValue="fileContents = $event"
 			/>
 		</div>
 	`,
 	methods: {
 		fileUpdate (file) {
+			if (this.contentsChanged) {
+				response = prompt("You have unsaved changes, do you want to abandon them?");
+				if (response == false) {
+					return;
+				}
+			}
 			this.currentFile = file;
 		},
+		fileContentsUpdated (contents) {
+			this.fileContents = contents;
+			this.contentsChanged = true;
+		},
+		// save () {
+		// 	fetch('/api/updateGist', {
+		// 		method: 'POST',
+		// 		body: this.contents
+		// 	}).then(res => {
+		// 		this.contentsChanged = false;
+		// 	}).catch(err => {
+		// 		alert('' + err);
+		// 	})
+		// },
 	},
 });
+
+window.onbeforeunload = function () {
+	if (app.contentsChanged) {
+		return "You have unsaved changes, are you sure you want to leave?"
+	}
+};
