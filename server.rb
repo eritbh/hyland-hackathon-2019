@@ -82,13 +82,23 @@ get "/api/gist/:id" do
 end
 
 patch "/api/gist/:id" do |id|
-  body = request.body.string
   gh_request "https://api.github.com/gists/#{id}", {
     method: :patch,
     headers: {
       "Content-Type" => "application/json"
     },
-    body: body,
+    body: request.body.string,
+    error: [401]
+  }
+end
+
+post "/api/gist" do
+  gh_request "https://api.github.com/gists", {
+    method: :post,
+    headers: {
+      "Content-Type" => "application/json"
+    },
+    body: request.body.string,
     error: [401]
   }
 end

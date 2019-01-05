@@ -111,13 +111,32 @@ Vue.component('gists-sidebar', {
 					},
 				}),
 			}).then(res => {
+				if (!res.ok) return;
 				this.fetchGists().then(() => {
 					this.selectFile(filename);
 				});
 			});
 		},
 		createGist () {
-			alert('Create a gist here');
+			const newDescription = prompt("Description for the new gist?", "");
+			if (newDescription == null) return;
+			fetch('/api/gist', {
+				method: 'POST',
+				body: JSON.stringify({
+					description: newDescription,
+					files: {
+						'README.md': {
+							content: 'New Gist'
+						}
+					}
+				})
+			}).then(res => res.ok && res.json()).then(data => {
+				if (!data) return;
+				this.fetchGists().then(() => {
+					this.selectGist(data.id);
+					this.selectFile('README.md');
+				})
+			})
 		},
 	},
 	template: `
@@ -153,7 +172,7 @@ Vue.component('gists-sidebar', {
 					>
 						<i :class="['fas fa-fw', icon(filename)]"/>
 						{{display(filename)}}
-							<span class="buttons">
+						<span class="buttons">
 							<button @click.stop="rename(filename)" title="Rename file"><i class="fas fa-fw fa-pencil-alt"/></button>
 							<button @click.stop="remove(filename)" title="Delete file"><i class="fas fa-fw fa-times"/></button>
 						</span>
