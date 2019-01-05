@@ -130,9 +130,10 @@ Vue.component('code-runner', {
 	},
 	data () {
 		return {
-			result: '',
+			result: 'Hit "Run" to see the result.',
 			running: false,
 			codemirrorInstance: null,
+			collapsed: true,
 		};
 	},
 	computed: {
@@ -168,17 +169,16 @@ Vue.component('code-runner', {
 			this.codemirrorInstance.setOption('mode', newLanguage.toLowerCase())
 		},
 		filename () {
-			this.result = '';
+			this.result = 'Hit "Run" to see the result.';
 		},
 	},
 	template: `
-		<div class="code-runner">
-			<div class="buttons">
+		<div :class="['code-runner', {collapsed}]">
+			<div class="buttons" @dblclick="collapsed = !collapsed">
 				<button class="run" @click="run">Run</button>
+				<button @click="collapsed = !collapsed">{{collapsed ? 'Expand' : 'Collapse'}}</button>
 			</div>
-			<div class="output">
-				<textarea id="output-textarea" disabled/>
-			</div>
+			<textarea id="output-textarea" disabled/>
 		</div>
 	`,
 	mounted () {
@@ -215,16 +215,16 @@ Vue.component('editor-pane', {
 	},
 	template: `
 		<div :class="['editor-pane', {'extra-styles': extraStyles, 'has-runner': hasRunner}]">
-			<div class="markdown-toolbar">
-				<div class="label">{{file ? file.filename : ''}}</div>
-				<button
-					@click="$emit('save')"
-					:disabled="!saveEnabled"
-				>
-					<i :class="['fas', saveEnabled ? 'fa-save' : 'fa-circle-notch fa-spin']"/>
-				</button>
-			</div>
 			<div class="pane-content">
+				<div class="markdown-toolbar">
+					<div class="label">{{file ? file.filename : ''}}</div>
+					<button
+						@click="$emit('save')"
+						:disabled="!saveEnabled"
+					>
+						<i :class="['fas', saveEnabled ? 'fa-save' : 'fa-circle-notch fa-spin']"/>
+					</button>
+				</div>
 				<textarea
 					class="code-area"
 					id="main-textarea"
@@ -329,7 +329,7 @@ const app = new Vue({
 				:file="currentFile"
 				:saveEnabled="saveEnabled"
 				@change="fileContentsUpdated"
-				@initialValue="fileContents = $event"
+				@initialValue="fileContentsInitial"
 				@save="save"
 			/>
 		</div>
@@ -342,6 +342,10 @@ const app = new Vue({
 		fileContentsUpdated (contents) {
 			this.fileContents = contents;
 			this.contentsChanged = true;
+		},
+		fileContentsInitial (contents) {
+			this.fileContents = contents;
+			this.contentsChanged = false;
 		},
 		save () {
 			this.saveEnabled = false;
