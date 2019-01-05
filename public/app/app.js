@@ -15,11 +15,9 @@ Vue.component('gists-sidebar', {
 	},
 	computed: {
 		selectedGist () {
-			console.log('calculated selectedGist')
 			return this.gists.find(gist => gist.id === this.selectedGistId);
 		},
 		selectedFile () {
-			console.log('calculated selectedFile')
 			if (!this.selectedGist) return null;
 			return this.selectedGist.files[this.selectedFilename];
 		}
@@ -30,7 +28,6 @@ Vue.component('gists-sidebar', {
 			return Object.keys(gist.files)[0];
 		},
 		selectGist (gistId) {
-			console.log(gistId);
 			this.selectedGistId = gistId;
 			this.selectedFilename = null;
 			if (gistId != null) {
@@ -78,7 +75,6 @@ Vue.component('gists-sidebar', {
 		</div>
 	`,
 	mounted () {
-		console.log('mounted')
 		fetch('/api/gists').then(res => res.json()).then(data => {
 			this.gists = data;
 			this.loaded = true;
