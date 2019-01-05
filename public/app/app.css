@@ -34,6 +34,10 @@ body {
 	border-right: 1px solid #CCC;
 	transition: left 300ms;
 	z-index: 11;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 .gists-sidebar .header {
 	font-size: 1.5em;
