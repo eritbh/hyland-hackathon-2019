@@ -151,7 +151,11 @@ Vue.component('editor-pane', {
 			<div class="no-file" v-else-if="!file">
 				No file selected
 			</div>
-			<pre class="code-editor" v-else><code>{{contents}}</code></pre>
+			<textarea
+				class="code-area"
+				v-else
+				v-model="contents"
+			/>
 		</div>
 	`,
 	watch: {
