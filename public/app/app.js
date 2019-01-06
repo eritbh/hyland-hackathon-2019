@@ -529,6 +529,11 @@ Vue.component('editor-pane', {
 				'Cmd-J': this.strike,
 				'Cmd-K': this.link,
 				'Shift-Cmd-K': this.image,
+				'Ctrl-B': this.bold,
+				'Ctrl-I': this.italic,
+				'Ctrl-J': this.strike,
+				'Ctrl-K': this.link,
+				'Shift-Ctrl-K': this.image,
 			}
 		});
 		this.codemirrorInstance.on('change', () => {
