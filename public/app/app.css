@@ -366,6 +366,9 @@ button:hover .fas {
 		bottom: 51px;
 		z-index: 12;
 	}
+	.gists-sidebar .file-item {
+		padding: 10px 10px;
+	}
 	.user-preview {
 		max-width: 80vw;
 		z-index: 12;
