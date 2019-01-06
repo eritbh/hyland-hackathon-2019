@@ -394,7 +394,8 @@ button:hover .fas {
 	.markdown-toolbar .right {
 		display: none;
 	}
-	.markdown-toolbar .save {
+	.markdown-toolbar .save,
+	.code-runner .buttons .run {
 		position: absolute;
 		top: 5px;
 		right: 10px;
