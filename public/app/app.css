@@ -346,3 +346,51 @@ button:hover .fas {
 .app.dark .editor-pane .code-runner .buttons {
 	background: #313335;
 }
+
+@media screen and (max-width: 1024px) {
+	.app {
+		grid:
+			"editor" 100%
+			/100%;
+	}
+	.gists-sidebar {
+		max-width: 80vw;
+	}
+	.gists-sidebar .gist-item .buttons,
+	.gists-sidebar .file-item .buttons {
+		display: flex;
+	}
+	.app:not(.sidebar-hidden) .sidebar-collapser {
+		opacity: 0.5 !important;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 10;
+		background: black;
+	}
+	.editor-pane .loading,
+	.editor-pane .no-file {
+		top: 50px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.markdown-toolbar .right {
+		display: none;
+	}
+	.markdown-toolbar .save {
+		position: absolute;
+		right: 10px;
+	}
+	.markdown-toolbar .label {
+		margin-right: 0;
+		padding: 0 58px;
+		left: 0;
+		right: 0;
+	}
+	.CodeMirror {
+		font-size: 0.75em;
+	}
+}

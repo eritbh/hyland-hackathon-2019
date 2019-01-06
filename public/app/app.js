@@ -405,7 +405,9 @@ Vue.component('editor-pane', {
 						<i class="fas fa-fw fa-bars"/>
 					</button>
 					<button
+						v-if="file"
 						@click="$emit('save')"
+						class="save"
 						:disabled="!saveEnabled"
 						title="Save current file"
 					>
@@ -575,6 +577,7 @@ const app = new Vue({
 				@initialValue="fileContentsInitial"
 				@save="save"
 			/>
+			<div class="sidebar-collapser" @click="sidebarHidden = true" style="opacity: 0"/>
 		</div>
 	`,
 	watch: {
