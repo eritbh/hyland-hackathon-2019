@@ -52,11 +52,13 @@ body {
 }
 .gists-sidebar .header .back {
 	position: absolute;
-	left: 7px;
+	top: 5px;
+	left: 10px;
 }
 .gists-sidebar .header .new {
 	position: absolute;
-	right: 7px;
+	top: 5px;
+	right: 10px;
 }
 .gists-sidebar .header button,
 .user-preview button,
@@ -348,9 +350,12 @@ button:hover .fas {
 }
 
 @media screen and (max-width: 1024px) {
+	:root {
+		overflow: none;
+	}
 	.app {
 		grid:
-			"editor" 100%
+			"editor" 100vh
 			/100%;
 	}
 	.gists-sidebar {
@@ -388,6 +393,7 @@ button:hover .fas {
 	}
 	.markdown-toolbar .save {
 		position: absolute;
+		top: 5px;
 		right: 10px;
 	}
 	.markdown-toolbar .label {
