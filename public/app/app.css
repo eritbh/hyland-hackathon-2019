@@ -355,6 +355,12 @@ button:hover .fas {
 	}
 	.gists-sidebar {
 		max-width: 80vw;
+		bottom: 51px;
+		z-index: 12;
+	}
+	.user-preview {
+		max-width: 80vw;
+		z-index: 12;
 	}
 	.gists-sidebar .gist-item .buttons,
 	.gists-sidebar .file-item .buttons {
