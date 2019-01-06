@@ -355,11 +355,11 @@ button:hover .fas {
 	}
 	.app {
 		grid:
-			"editor" 100vh
+			"editor" 100%
 			/100%;
 	}
 	.editor-pane {
-		height: 100vh;
+		height: calc(100vh - 51px);
 	}
 	.gists-sidebar {
 		max-width: 80vw;
