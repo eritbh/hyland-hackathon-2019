@@ -411,6 +411,13 @@ Vue.component('editor-pane', {
 					>
 						<i :class="['fas fa-fw', saveEnabled ? 'fa-save' : 'fa-circle-notch fa-spin']"/>
 					</button>
+					<div class="right" v-if="file && file.language === 'Markdown'">
+						<button title="Bold" @click="bold"><i class="fas fa-fw fa-bold"/></button>
+						<button title="Italic" @click="italic"><i class="fas fa-fw fa-italic"/></button>
+						<button title="Strikethrough" @click="strike"><i class="fas fa-fw fa-strikethrough"/></button>
+						<button title="Add Hyperlink" @click="link"><i class="fas fa-fw fa-link"/></button>
+						<button title="Add Image" @click="image"><i class="fas fa-fw fa-image"/></button>
+					</div>
 					<div class="label">{{file ? file.filename : ''}}</div>
 				</div>
 				<textarea
@@ -486,11 +493,43 @@ Vue.component('editor-pane', {
 					this.codemirrorInstance.setOption('lineWrapping', false);
 			}
 		},
+		wrapSelection(before, after = before) {
+			const doc = this.codemirrorInstance.getDoc();
+			const oldSelection = doc.listSelections()[0];
+			doc.replaceSelection((before + doc.getSelection() + after));
+			this.codemirrorInstance.focus();
+			if (oldSelection.anchor.line !== oldSelection.head.line) return;
+			oldSelection.anchor.ch += before.length;
+			oldSelection.head.ch += before.length;
+			doc.setSelection(oldSelection.anchor, oldSelection.head);
+		},
+		bold () {
+			this.wrapSelection('**');
+		},
+		italic () {
+			this.wrapSelection('*');
+		},
+		strike () {
+			this.wrapSelection('~~');
+		},
+		link () {
+			this.wrapSelection('[', ']()');
+		},
+		image () {
+			this.wrapSelection('![](', ')');
+		},
 	},
 	mounted () {
 		this.codemirrorInstance = CodeMirror.fromTextArea(document.getElementById('main-textarea'), {
 			lineNumbers: true,
 			theme: this.dark ? 'darcula' : 'default',
+			extraKeys: {
+				'Cmd-B': this.bold,
+				'Cmd-I': this.italic,
+				'Cmd-J': this.strike,
+				'Cmd-K': this.link,
+				'Shift-Cmd-K': this.image,
+			}
 		});
 		this.codemirrorInstance.on('change', () => {
 			this.contents = this.codemirrorInstance.getDoc().getValue();

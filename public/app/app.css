@@ -238,8 +238,13 @@ body {
 	text-align: center;
 	pointer-events: none;
 }
-.editor-pane .markdown-toolbar > * {
+.editor-pane .markdown-toolbar button,
+.editor-pane .markdown-toolbar .label {
 	margin-right: 5px;
+}
+.editor-pane .markdown-toolbar .right {
+	position: absolute;
+	right: 5px;
 }
 .markdown-toolbar button,
 .code-runner .buttons button {
