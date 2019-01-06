@@ -358,6 +358,9 @@ button:hover .fas {
 			"editor" 100vh
 			/100%;
 	}
+	.editor-pane {
+		height: 100vh;
+	}
 	.gists-sidebar {
 		max-width: 80vw;
 		bottom: 51px;
